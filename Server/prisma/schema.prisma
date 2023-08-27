@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:database.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // generator
@@ -9,4 +9,61 @@ generator client {
   recursive_type_depth = 5
 }
 
+enum AuthorType {
+  MACHINE
+  USER
+}
+
 // data models
+model Organisation {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  logo        String
+  userId      Int
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String
+  phone        String
+  passwordHash String
+  passwordSalt String
+  organisation Organisation[]
+}
+
+model Chatbot {
+  id            Int            @id @default(autoincrement())
+  name          String
+  configuration Json
+  conversations Conversation[]
+  website       Website?
+}
+
+model Conversation {
+  id        Int       @id @default(autoincrement())
+  name      String    @default("Anonymous")
+  chatbotId Int
+  chatbot   Chatbot   @relation(fields: [chatbotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  messages  Message[]
+}
+
+model Message {
+  id             Int          @id @default(autoincrement())
+  content        String
+  timestamp      DateTime     @default(now())
+  author         AuthorType
+  conversationId Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Website {
+  id          Int      @id @default(autoincrement())
+  name        String
+  hostURL     String
+  activeLinks String[]
+  chatbotId   Int      @unique
+  chatbot     Chatbot? @relation(fields: [chatbotId], references: [id])
+}
