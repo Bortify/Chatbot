@@ -1,3 +1,4 @@
 Server/*.env
 Server/venv
 Server/prisma/database.db
+.vscode
