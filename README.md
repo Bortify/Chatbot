@@ -16,7 +16,7 @@
 
 ### for Chatfront
 - [Preact](https://preactjs.com/) for creating injectible scripts.
-- ```Rest is yet about to be decided```
+- ```Rest is yet to be decided```
 
 ### for Dashboard
 - [ReactJs](https://react.dev/) for development of dashboard.
