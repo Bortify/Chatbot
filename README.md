@@ -9,7 +9,7 @@
 ## Tech Stack we will use
 
 ### for Backend:
-- [FastApi](https://fastapi.tiangolo.com/) for creating APIs.
+- [Express](https://expressjs.com/) for creating APIs.
 - [Postgres](https://www.postgresql.org/) for db.
 - [Redis](https://redis.io/) for state management.
 - [Prisma](https://prisma-client-py.readthedocs.io/en/stable/) for interacting with db via code.
@@ -20,3 +20,8 @@
 
 ### for Dashboard
 - [ReactJs](https://react.dev/) for development of dashboard.
+
+### Enviroment Variables
+
+-  ```PORT``` : Port on which you want to run this server.
+- ```DATABASE_URL``` : Database URL. We'rae using postgres for database so install it first, get connection url and then start server.

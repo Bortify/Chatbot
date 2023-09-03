@@ -1,23 +1,28 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `password_hash` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `password_salt` on the `User` table. All the data in the column will be lost.
-  - Added the required column `passwordHash` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `passwordSalt` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "AuthorType" AS ENUM ('MACHINE', 'USER');
 
--- DropForeignKey
-ALTER TABLE "Organisation" DROP CONSTRAINT "Organisation_userId_fkey";
+-- CreateTable
+CREATE TABLE "Organisation" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "logo" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
 
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "password_hash",
-DROP COLUMN "password_salt",
-ADD COLUMN     "passwordHash" TEXT NOT NULL,
-ADD COLUMN     "passwordSalt" TEXT NOT NULL;
+    CONSTRAINT "Organisation_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
+    "passwordSalt" TEXT NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Chatbot" (
