@@ -5,10 +5,11 @@ import { createSocket } from '../sockets'
 
 interface ChatProps {
   message: string
-  author: 'AGENT' | 'CLIENT'
+  author: 'SERVER' | 'CLIENT'
 }
 
 export default function useBot({ chatId }: { chatId: string }) {
+
   const [socket, setSocket] = useState<Socket>()
   const [chat, setChat] = useState<ChatProps[]>([])
   useEffect(() => {
