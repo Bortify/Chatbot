@@ -9,7 +9,7 @@ import useBot from './hooks/useBot'
 // const id = uuid()
 
 function App() {
-  const { socket } = useBot({ chatId: '66045067-6ee4-492c-80f0-ecf26ae4cfc1' })
+  const { socket, chat, setChat, isServerIdle} = useBot({ chatId: '66045067-6ee4-492c-80f0-ecf26ae4cfc1' })
   
   return (
     <>
@@ -46,7 +46,7 @@ function App() {
               leaveFrom='opacity-100 translate-y-0'
               leaveTo='opacity-0 translate-y-5'>
               <Popover.Panel className='fixed right-10 bottom-32'>
-                <ChattingWindow socket={socket}/>
+                <ChattingWindow socket={socket} chat={chat} setChat={setChat} isServerIdle={isServerIdle}/>
               </Popover.Panel>
             </Transition>
           </>

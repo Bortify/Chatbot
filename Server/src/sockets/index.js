@@ -16,14 +16,14 @@ const getOnSocketConnection = (io) => (socket) => {
 
     io.to(statusChannelId).emit('status', {
       status: 'PROCESSING',
-      agent: 'SYSTEM',
+      agent: 'SERVER',
     })
 
     const ans = await client.getPredition(data.message)
 
     io.to(statusChannelId).emit('status', {
       status: 'IDLE',
-      agent: 'SYSTEM',
+      agent: 'SERVER',
     })
 
     console.log('bot says: ', ans)
