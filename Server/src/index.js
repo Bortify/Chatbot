@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 
 import { Server as ServerConfig, Environ as EnvironConfig } from './config.js'
+import getOnSocketConnection from './sockets/index.js'
 
 const { PORT } = ServerConfig
 const { ENVIRONMENT } = EnvironConfig
@@ -17,7 +18,10 @@ if (ENVIRONMENT === 'development') {
 }
 
 app.get('/', (req, res) => {
-  res.sendFile(process.cwd() + '/src/sockets/index.html')
+  res.json({
+    msg: 'Server Running',
+    port: PORT
+  })
 })
 
 const server = createServer(app)
@@ -28,16 +32,6 @@ const io = new Server(server, {
   },
 })
 
-io.on('connection', (socket) => {
-  socket.broadcast.emit('Hello everyone')
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
-  })
-  socket.on('chat message', (msg) => {
-    io.emit('server', msg)
-  })
-})
+io.on('connection', getOnSocketConnection(io))
 
-server.listen(PORT, () => {
-  console.log('server is listening on port ', PORT)
-})
+server.listen(PORT)
