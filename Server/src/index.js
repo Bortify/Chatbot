@@ -14,15 +14,7 @@ const app = Express()
 
 if (ENVIRONMENT === 'development') {
   app.use(logger('dev'))
-  app.use(cors([]))
 }
-
-app.get('/', (req, res) => {
-  res.json({
-    msg: 'Server Running',
-    port: PORT
-  })
-})
 
 const server = createServer(app)
 const io = new Server(server, {
