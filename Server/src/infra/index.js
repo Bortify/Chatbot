@@ -13,8 +13,7 @@ export class ChatBotInfra {
     const llm = new OpenAI({
       openAIApiKey: OpenAIConfig.API_KEY,
     })
-    this._llm = llm
-    
+    this.llm = llm
     const productPath = resolve(__dirname,'..','..','dummy_data','products.csv')
     this.loadProducts(productPath)
   }
