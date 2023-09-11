@@ -47,7 +47,7 @@ export default function useBot({ chatId }: { chatId: string }) {
     return () => {
       socketInit.disconnect()
     }
-  }, [chatId, chat])
+  }, [isServerIdle])
 
   return {
     socket,

@@ -1,21 +1,24 @@
 import classNames from 'classnames'
 
 import { ChatProps } from '../../hooks/useBot'
+import ChatPlaceholder from '../Placeholder'
 
-export default function Body({ chat }: { chat: ChatProps[] }) {
+export default function Body({
+  chat,
+  isServerIdle,
+}: {
+  chat: ChatProps[]
+  isServerIdle: boolean
+}) {
   const messageComponents = chat.map((chat, index) => {
-    return (
-      <Message
-        key={index}
-        message={chat.message}
-        author={chat.author}
-      />
-    )
+    return <Message key={index} message={chat.message} author={chat.author} />
   })
 
   return (
     <div className="w-full h-[500px] overflow-y-scroll px-5 py-5">
       {messageComponents}
+      {isServerIdle == false && <ChatPlaceholder author="SERVER" />}
+      {/* <ChatPlaceholder author="SERVER" /> */}
     </div>
   )
 }

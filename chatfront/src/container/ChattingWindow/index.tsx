@@ -10,7 +10,7 @@ export default function ChattingWindow({ socket, chat, setChat, isServerIdle }: 
   return (
     <div className='rounded-t-xl shadow-lg bg-[#f8f8f8] overflow-hidden w-96'>
       <TopBar isServerIdle={isServerIdle} />
-      <Body chat={chat} socket={socket}   />
+      <Body chat={chat} socket={socket}  isServerIdle={isServerIdle}  />
       <Input socket={socket} util ={{setChat, chat}} isServerIdle={isServerIdle}/>
     </div>
   )
