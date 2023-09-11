@@ -12,8 +12,6 @@ const getOnSocketConnection = (io) => (socket) => {
   socket.join(userChannelId)
   socket.join(statusChannelId)
   socket.on('message', async (data) => {
-    console.warn('bot is thinking.....')
-
     io.to(statusChannelId).emit('status', {
       status: 'PROCESSING',
       agent: 'SERVER',
@@ -26,8 +24,6 @@ const getOnSocketConnection = (io) => (socket) => {
       agent: 'SERVER',
     })
 
-    console.log('bot says: ', ans)
-    
     io.to(userChannelId).emit('message', {
       message: ans,
     })
