@@ -1,5 +1,7 @@
 import { ChatBotInfra } from '../infra/index.js'
 
+const client = new ChatBotInfra()
+
 const getOnSocketConnection = (io) => (socket) => {
   const { chatId } = socket.handshake.auth
   console.log('user connected with id', chatId)
@@ -7,7 +9,6 @@ const getOnSocketConnection = (io) => (socket) => {
   const userChannelId = `${chatId}-user`
   const statusChannelId = `${chatId}-status`
 
-  const client = new ChatBotInfra()
 
   socket.join(userChannelId)
   socket.join(statusChannelId)
@@ -18,7 +19,7 @@ const getOnSocketConnection = (io) => (socket) => {
     })
 
     const ans = await client.getPredition(data.message)
-
+    console.log('bot says',ans)
     io.to(statusChannelId).emit('status', {
       status: 'IDLE',
       agent: 'SERVER',

@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 
 import { Server as ServerConfig, Environ as EnvironConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
+import { ChatBotInfra } from './infra/index.js'
 
 const { PORT } = ServerConfig
 const { ENVIRONMENT } = EnvironConfig
