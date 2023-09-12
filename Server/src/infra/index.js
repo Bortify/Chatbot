@@ -1,52 +1,32 @@
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai'
 import { OpenAI } from 'langchain/llms/openai'
-import { CSVLoader } from 'langchain/document_loaders/fs/csv'
-import { FaissStore } from 'langchain/vectorstores/faiss'
+import { BufferMemory } from 'langchain/memory'
 import { PromptTemplate } from 'langchain/prompts'
 import { ConversationalRetrievalQAChain } from 'langchain/chains'
 
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
-import { Embeddings, OpenAI as OpenAIConfig } from '../config.js'
+import { OpenAI as OpenAIConfig } from '../config.js'
+import { loadProducts } from './loader/index.js'
+import { openAiEmbedder } from './embedder/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export class ChatBotInfra {
-  #loadProducts = async (dir) => {
-    console.log('products are getting loaded')
-    const loader = new CSVLoader(dir)
-    const docs = await loader.load()
-    this.products = docs
-    console.log('products are loaded')
-  }
-
-  #initEmbeddings = async (config) => {
-    const embeddings = new OpenAIEmbeddings({
-      openAIApiKey: OpenAIConfig.API_KEY,
-      batchSize: Embeddings.BATCH_SIZE,
-    })
-    let vectorStore = null
-    const loadedVectorStore = await FaissStore.load(
-      Embeddings.DB_FAISS_PATH,
-      embeddings
-    )
-    vectorStore = loadedVectorStore
-    this.vectorStore = vectorStore
-  }
-
-  #createPromptTemplate = async () => {
-    this.promptTemplate = new PromptTemplate({
-      template,
-      inputVariables: ['history', 'input'],
-    })
-  }
-
   #init = async ({ products: { dir }, embeddings: { config } }) => {
-    await this.#loadProducts(dir)
-    await this.#initEmbeddings(config)
-    await this.#createPromptTemplate()
+    this.docs = await loadProducts(dir)
+    this.vectorStore = await openAiEmbedder(config)
+    const retriever = this.vectorStore.asRetriever(1, 'similarity')
+    this.chain = ConversationalRetrievalQAChain.fromLLM(this.llm, retriever, {
+      memory: new BufferMemory({
+        memoryKey: 'chat_history',
+      }),
+    })
+    this.prompt = new PromptTemplate({
+      template: template,
+      inputVariables: ['history','input']
+    })
   }
 
   constructor() {
@@ -75,12 +55,11 @@ export class ChatBotInfra {
   }
 
   getPredition = async (message) => {
-    const retriever = this.vectorStore.asRetriever(2, 'similarity')
-    const chain = ConversationalRetrievalQAChain.fromLLM(this.llm, retriever)
-    const res = await chain.call({ question: message })
-    console.log('chain output: ',res)
-    const result = await this.llm.predict(message)
-    return result
+    // const result = await this.llm.predict(message)
+    const result = await this.chain.call({
+      question: message,
+    })
+    return result.text
   }
 }
 

@@ -1,13 +1,12 @@
 import { ChatBotInfra } from '../infra/index.js'
 
-const client = new ChatBotInfra()
-
 const getOnSocketConnection = (io) => (socket) => {
   const { chatId } = socket.handshake.auth
   console.log('user connected with id', chatId)
 
   const userChannelId = `${chatId}-user`
   const statusChannelId = `${chatId}-status`
+  const client = new ChatBotInfra()
 
 
   socket.join(userChannelId)
