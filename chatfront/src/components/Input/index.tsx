@@ -29,11 +29,14 @@ export default function Input({ socket, util, isServerIdle }: { socket: Socket, 
 
   return (
     <div className="flex flex-col px-5 bg-white">
+      {
+        !isServerIdle && <span className='block my-2 text-xs text-red-600'>You can't send a message while bot is thinking</span>
+      }
       <div className="flex items-center justify-center w-full py-1 border-b border-b-gray-500">
         <input
           ref={inputRef}
           className="flex flex-1 outline-none border-none px-2 py-4 text-[#222] placeholder:text-gray-700 disabled:opacity-75 disabled:cursor-not-allowed"
-          placeholder={ isServerIdle ? "Type Your Message" : "BOT SOCH RHA HAI(dab dab dab dab)"}
+          placeholder={"Type Your Message"}
           onKeyDown={onKeyDown}
           disabled={!isServerIdle}
         />
