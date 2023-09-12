@@ -21,5 +21,9 @@ export const PineCone = {
 
 export const Embeddings = {
   BATCH_SIZE: 512,
-  DB_FAISS_PATH: 'vectorstore/db_faiss',
+}
+
+export const VectorStore = {
+  PRODUCT_DB_DIR: 'vectorstore/products',
+  TEXT_CONTENT_DB_DIR: 'vectorstore/text'
 }

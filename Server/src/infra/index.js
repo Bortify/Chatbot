@@ -1,72 +1,60 @@
-import { OpenAI } from 'langchain/llms/openai'
-import { BufferMemory } from 'langchain/memory'
-import { PromptTemplate } from 'langchain/prompts'
-import { ConversationalRetrievalQAChain } from 'langchain/chains'
-
-import { dirname, resolve } from 'path'
-import { fileURLToPath } from 'url'
-
-import { OpenAI as OpenAIConfig } from '../config.js'
-import { loadProducts } from './loader/index.js'
-import { openAiEmbedder } from './embedder/index.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { createAgent } from './agents/index.js'
+import { getLLM } from './models/index.js'
+import { generalQuestionResolution, productRecommendor } from './tools/index.js'
+import { getContentStore, getProductStore } from './vectorStore/index.js'
 
 export class ChatBotInfra {
-  #init = async ({ products: { dir }, embeddings: { config } }) => {
-    this.docs = await loadProducts(dir)
-    this.vectorStore = await openAiEmbedder(config)
-    const retriever = this.vectorStore.asRetriever(1, 'similarity')
-    this.chain = ConversationalRetrievalQAChain.fromLLM(this.llm, retriever, {
-      memory: new BufferMemory({
-        memoryKey: 'chat_history',
+  #init = async () => {
+    const productStore = await getProductStore()
+    const contentStore = await getContentStore()
+    const tools = [
+      productRecommendor({
+        llm: this.llm,
+        retriever: productStore.asRetriever(1, 'similarity'),
       }),
-    })
-    this.prompt = new PromptTemplate({
-      template: template,
-      inputVariables: ['history','input']
-    })
+      generalQuestionResolution({
+        llm: this.llm,
+        retriever: contentStore.asRetriever(1, 'similarity'),
+      }),
+    ]
+    this.agent = await createAgent({ llm: this.llm, tools })
   }
 
   constructor() {
-    const llm = new OpenAI({
-      openAIApiKey: OpenAIConfig.API_KEY,
-    })
-
-    const productPath = resolve(
-      __dirname,
-      '..',
-      '..',
-      'dummy_data',
-      'products.csv'
-    )
-
-    this.#init({
-      products: {
-        dir: productPath,
-      },
-      embeddings: {
-        config: {},
-      },
-    })
-
-    this.llm = llm
+    this.llm = getLLM()
+    this.#init()
   }
 
-  getPredition = async (message) => {
-    // const result = await this.llm.predict(message)
-    const result = await this.chain.call({
-      question: message,
-    })
-    return result.text
+  predict = async (query) => {
+    const ans = await this.agent.call({ input: query })
+    return ans
   }
 }
 
-const template = `
-The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
+// import { dirname, resolve } from 'path'
+// import { fileURLToPath } from 'url'
+// import { FaissStore } from './vectorStore/index.js'
+// import { csvLoader, textLoader } from './loaders/index.js'
+// import { openAIEmbedding } from './embedder/index.js'
+// import { Embeddings } from '../config.js'
+// const __filename = fileURLToPath(import.meta.url)
+// const __dirname = dirname(__filename)
+// loadDocs = async () => {
+//   console.log('loading started')
+//   const productPath = resolve(
+//     __dirname,
+//     '..',
+//     '..',
+//     'dummy_data',
+//     'products.csv'
+//   )
+//   const textPath = resolve(__dirname, '..', '..', 'dummy_data', 'text.txt')
+//   const productsDoc = await csvLoader(productPath)
+//   const textDoc = await textLoader(textPath)
 
-Current conversation:
-{history}
-Friend: {input}
-AI:`
+//   const productStore = await FaissStore.fromDocuments(productsDoc, openAIEmbedding)
+//   const textStore = await FaissStore.fromDocuments(textDoc,openAIEmbedding)
+//   await productStore.save(Embeddings.PRODUCT_DB_DIR)
+//   await textStore.save(Embeddings.TEXT_CONTENT_DB_DIR)
+//   console.log('loading finished')
+// }
