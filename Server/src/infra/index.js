@@ -26,7 +26,7 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    const ans = await this.agent.call({ input: query })
+    const ans = await this.llm.predict(query)
     return ans
   }
 }

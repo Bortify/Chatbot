@@ -26,16 +26,6 @@ export default function useBot({ chatId }: { chatId: string }) {
     const socketInit = createSocket('http://localhost:8080', { chatId })
     socketInit.connect()
     setSocket(socketInit)
-
-    socketInit.on('status', (data: StatusEventProps) => {
-      if (data.agent === 'SERVER' && data.status === 'PROCESSING') {
-        setIsServerIdle(false)
-      }
-      if (data.agent === 'SERVER' && data.status === 'IDLE') {
-        setIsServerIdle(true)
-      }
-    })
-
     socketInit.on('message', (data: MessageEventProp) => {
       const recievedMessage: ChatProps = {
         message: data.message,
@@ -44,10 +34,18 @@ export default function useBot({ chatId }: { chatId: string }) {
       const newChat = [...chat, recievedMessage]
       setChat(newChat)
     })
-    return () => {
-      socketInit.disconnect()
-    }
-  }, [isServerIdle])
+  }, [isServerIdle, chat, chatId])
+
+  useEffect(()=>{
+    socket?.on('status', (data: StatusEventProps) => {
+      if (data.agent === 'SERVER' && data.status === 'PROCESSING') {
+        setIsServerIdle(false)
+      }
+      if (data.agent === 'SERVER' && data.status === 'IDLE') {
+        setIsServerIdle(true)
+      }
+    })
+  },[isServerIdle,socket])
 
   return {
     socket,
