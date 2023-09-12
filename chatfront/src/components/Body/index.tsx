@@ -1,8 +1,8 @@
 import classNames from 'classnames'
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { ChatProps } from '../../hooks/useBot'
-import ChatPlaceholder from '../Placeholder'
+import ChatPlaceholder from './components/Placeholder'
 
 interface BodyProps {
   chat: ChatProps[]
@@ -28,9 +28,8 @@ export default function Body({ chat, isServerIdle }: BodyProps) {
           <Message key={index} message={chat.message} author={chat.author} />
         )
       })}
-      {isServerIdle == false && <ChatPlaceholder author='SERVER' />}
+      {isServerIdle == false && <ChatPlaceholder/>}
       <div className='w-full h-20'/>
-      {/* <ChatPlaceholder author="SERVER" /> */}
     </div>
   )
 }
