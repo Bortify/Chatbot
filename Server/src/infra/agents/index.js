@@ -5,7 +5,7 @@ export const createAgent = ({ llm, tools, config = {} }) => {
     agentType: 'structured-chat-zero-shot-react-description',
     maxIterations: 1,
     returnIntermediateSteps: true,
-    earlyStoppingMethod: 'generate',
+    earlyStoppingMethod: 'force',
     ...config,
   })
 }

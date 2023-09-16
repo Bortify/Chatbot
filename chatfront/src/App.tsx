@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <Popover className="fixed right-10 bottom-8">
+      <Popover className="fixed right-10 bottom-8 z-[9999]">
         {({ open }) => (
           <>
             <Popover.Button className={'outline-none border-none'}>
