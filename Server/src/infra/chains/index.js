@@ -10,13 +10,9 @@ export const conversationalRetrievalChain = ({ llm, retriever }) => {
       memoryKey: 'chat_history',
     }),
     returnSourceDocuments: true,
-    
   })
 }
 
-export const retrievalQAchain = ({ llm, retriever, prompt }) => {
-  return RetrievalQAChain.fromLLM(llm, retriever, {
-    prompt: prompt,
-    returnSourceDocuments: true,
-  })
+export const retrievalQAchain = ({ llm, retriever }) => {
+  return RetrievalQAChain.fromLLM(llm, retriever)
 }

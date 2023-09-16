@@ -12,6 +12,7 @@ dashboardRouter.post('/load-data', async (req, res) => {
       })
       .status(200)
   } catch (e) {
+    console.log(e)
     return res
       .json({
         message: 'Some Problem Occured while loading data',
