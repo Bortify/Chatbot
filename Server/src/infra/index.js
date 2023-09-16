@@ -24,7 +24,7 @@ export class ChatBotInfra {
       tools,
       config: {
         handleParsingErrors: "I don't know :(",
-        verbose: true
+        verbose: true,
       },
     })
   }
@@ -35,9 +35,11 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    const ans = await this.agent.invoke({
-      input: query,
-    })
+    // const ans = await this.agent.invoke({
+    //   input: query,
+    // })
+    // return ans.intermediateSteps?.[0]?.observation
+    const ans = await this.llm.predict(query)
     return ans
   }
 }

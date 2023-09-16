@@ -20,9 +20,9 @@ const getOnSocketConnection = (io) => (socket) => {
     try{
       const ans = await client.predict(data.message)
       console.log('bot says',ans)
-      // io.to(userChannelId).emit('message', {
-      //   message: ans,
-      // })
+      io.to(userChannelId).emit('message', {
+        message: ans,
+      })
     } catch (e){
       console.error(e)
     } finally {
