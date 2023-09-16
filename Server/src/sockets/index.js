@@ -17,16 +17,20 @@ const getOnSocketConnection = (io) => (socket) => {
       agent: 'SERVER',
     })
 
-    const ans = await client.predict(data.message)
-    console.log('bot says',ans)
-    io.to(statusChannelId).emit('status', {
-      status: 'IDLE',
-      agent: 'SERVER',
-    })
-
-    io.to(userChannelId).emit('message', {
-      message: ans,
-    })
+    try{
+      const ans = await client.predict(data.message)
+      console.log('bot says',ans)
+      // io.to(userChannelId).emit('message', {
+      //   message: ans,
+      // })
+    } catch (e){
+      console.error(e)
+    } finally {
+      io.to(statusChannelId).emit('status', {
+        status: 'IDLE',
+        agent: 'SERVER',
+      })
+    }
   })
 }
 

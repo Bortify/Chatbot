@@ -7,6 +7,7 @@ export class ChatBotInfra {
   #init = async () => {
     const productStore = await getProductStore()
     const contentStore = await getContentStore()
+
     const tools = [
       productRecommendor({
         llm: this.llm,
@@ -17,7 +18,15 @@ export class ChatBotInfra {
         retriever: contentStore.asRetriever(1, 'similarity'),
       }),
     ]
-    this.agent = await createAgent({ llm: this.llm, tools })
+
+    this.agent = await createAgent({
+      llm: this.llm,
+      tools,
+      config: {
+        handleParsingErrors: "I don't know :(",
+        verbose: true
+      },
+    })
   }
 
   constructor() {
@@ -26,7 +35,9 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    const ans = await this.llm.predict(query)
+    const ans = await this.agent.invoke({
+      input: query,
+    })
     return ans
   }
 }
