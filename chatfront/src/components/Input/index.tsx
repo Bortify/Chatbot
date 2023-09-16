@@ -1,8 +1,9 @@
-import { Send, SmilePlus } from 'lucide-react'
+import { Send, SendHorizonal, SmilePlus } from 'lucide-react'
 import React, { useRef } from 'react'
 import { Socket } from 'socket.io-client'
 
 import { ChatProps } from '../../hooks/useBot'
+import SendIcon from '../../assets/icons/sendIcon2.svg'
 
 export default function Input({
   socket,
@@ -44,25 +45,32 @@ export default function Input({
   }
 
   return (
-    <div className='flex flex-col px-5 bg-white'>
+    <div className="flex flex-col px-5 bg-white rounded-2xl ">
       {!isServerIdle && (
-        <span className='block my-2 text-xs text-red-600'>
+        <span className="block my-2 text-xs text-red-600">
           You can't send a message while bot is thinking
         </span>
       )}
-      <div className='flex items-center justify-center w-full py-1 border-b border-b-gray-500'>
+      <div className="flex items-center justify-center w-full py-1 ">
         <input
           ref={inputRef}
-          className='flex flex-1 outline-none border-none px-2 py-4 text-[#222] placeholder:text-gray-700 disabled:opacity-75 disabled:cursor-not-allowed'
+          className="flex flex-1 outline-none border-none px-2 py-4 text-black/80 bg-transparent placeholder:text-black/80 disabled:opacity-75 disabled:cursor-not-allowed"
           placeholder={'Type Your Message'}
           onKeyDown={onKeyDown}
           disabled={!isServerIdle}
         />
-        <Send className='text-[#222] w-6 h-6' />
+        <button className=' bg-primary p-2 rounded-full aspect-square' >
+          <SendHorizonal className="text-[#f5f6f8]/60  translate-x-[2px] w-6 h-auto " />
+        </button>
       </div>
-      <div className='flex items-center justify-center w-full py-5'>
-        <SmilePlus className='w-5 h-5 text-slate-500' />
-        <div className='flex flex-1' />
+      <hr className="w-full mt-2 h-0.5 border rounded-xl border-gray-800/20" />
+      <div className="flex items-center justify-center w-full py-5">
+        <SmilePlus className="w-5 h-5 text-black/60" />
+        <div className="flex flex-1" />
+        <span className="text-xs text-black/60">
+          Powered by{' '}
+          <span className="text-sm font-semibold font-logo">IndieBot</span>
+        </span>
       </div>
     </div>
   )

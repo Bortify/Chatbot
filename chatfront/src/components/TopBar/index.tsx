@@ -1,9 +1,9 @@
-import { MoreVertical, User } from 'lucide-react'
+import { MoreVertical, Bot} from 'lucide-react'
 
 export default function TopBar({ isServerIdle }: { isServerIdle: boolean }) {
   return (
-    <div className="px-8 py-5 bg-slate-900 flex items-center justify-center gap-5">
-      <User className="w-7 h-7 text-white" />
+    <div className="px-8 py-5 bg-primary flex items-center justify-center gap-5">
+      <Bot className="w-7 h-7 text-white" />
       <div className="flex flex-1 items-center">
         <div>
           <span className="text-base text-white">Bot</span>

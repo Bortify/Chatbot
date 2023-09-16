@@ -22,7 +22,7 @@ export default function Body({ chat, isServerIdle }: BodyProps) {
   }, [chat])
 
   return (
-    <div className='w-full h-[500px] overflow-y-scroll px-5 py-5' ref={ref}>
+    <div className='w-full h-[500px] overflow-y-auto font-body px-5 py-5' ref={ref}>
       {chat.map((chat, index) => {
         return (
           <Message key={index} message={chat.message} author={chat.author} />
@@ -47,7 +47,7 @@ function Message({
       <span
         className={classNames('block px-4 py-3 rounded-2xl max-w-xs', {
           'bg-slate-900 text-white': author === 'SERVER',
-          'border-2 border-slate-900 text-slate-900': author === 'CLIENT',
+          'border-2 bg-secondary  text-white': author === 'CLIENT',
         })}>
         {message}
       </span>
