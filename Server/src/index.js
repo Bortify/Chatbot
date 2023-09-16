@@ -8,6 +8,7 @@ import { Server } from 'socket.io'
 
 import { Server as ServerConfig, Environ as EnvironConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
+import appRouter from './routes/index.js'
 
 const { PORT } = ServerConfig
 const { ENVIRONMENT } = EnvironConfig
@@ -20,6 +21,9 @@ const accessLogStream = fs.createWriteStream(
 )
 
 const app = Express()
+
+app.use(Express.json())
+app.use(appRouter)
 
 if (ENVIRONMENT === 'development') {
   app.use(logger('combined', { stream: accessLogStream }))

@@ -16,6 +16,6 @@ export const siteLoader = async (url, fields = {}) => {
 
 export const textLoader = async (dir) => {
   const loader = new TextLoader(dir)
-  const docs = await loader.load()
+  const docs = await loader.loadAndSplit()
   return docs
 }

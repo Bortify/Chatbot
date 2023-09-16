@@ -9,10 +9,10 @@ export class ChatBotInfra {
     const contentStore = await getContentStore()
 
     const tools = [
-      productRecommendor({
-        llm: this.llm,
-        retriever: productStore.asRetriever(1, 'similarity'),
-      }),
+      // productRecommendor({
+      //   llm: this.llm,
+      //   retriever: productStore.asRetriever(1, 'similarity'),
+      // }),
       generalQuestionResolution({
         llm: this.llm,
         retriever: contentStore.asRetriever(1, 'similarity'),
@@ -35,39 +35,14 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    // const ans = await this.agent.invoke({
-    //   input: query,
-    // })
-    // return ans.intermediateSteps?.[0]?.observation
-    const ans = await this.llm.predict(query)
-    return ans
+    const ans = await this.agent.invoke({
+      input: query,
+    })
+    if (ans.output?.length > 0) {
+      return ans.output
+    } else if (ans?.intermediateSteps?.[0]?.observation?.length > 0) {
+      return ans?.intermediateSteps?.[0]?.observation?.length
+    }
+    return `I don't know :(`
   }
 }
-
-// import { dirname, resolve } from 'path'
-// import { fileURLToPath } from 'url'
-// import { FaissStore } from './vectorStore/index.js'
-// import { csvLoader, textLoader } from './loaders/index.js'
-// import { openAIEmbedding } from './embedder/index.js'
-// import { Embeddings } from '../config.js'
-// const __filename = fileURLToPath(import.meta.url)
-// const __dirname = dirname(__filename)
-// loadDocs = async () => {
-//   console.log('loading started')
-//   const productPath = resolve(
-//     __dirname,
-//     '..',
-//     '..',
-//     'dummy_data',
-//     'products.csv'
-//   )
-//   const textPath = resolve(__dirname, '..', '..', 'dummy_data', 'text.txt')
-//   const productsDoc = await csvLoader(productPath)
-//   const textDoc = await textLoader(textPath)
-
-//   const productStore = await FaissStore.fromDocuments(productsDoc, openAIEmbedding)
-//   const textStore = await FaissStore.fromDocuments(textDoc,openAIEmbedding)
-//   await productStore.save(Embeddings.PRODUCT_DB_DIR)
-//   await textStore.save(Embeddings.TEXT_CONTENT_DB_DIR)
-//   console.log('loading finished')
-// }
