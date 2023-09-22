@@ -8,5 +8,3 @@ export const getProductStore = () =>
 
 export const getContentStore = () =>
   FaissStore.load(VectorStore.TEXT_CONTENT_DB_DIR, openAIEmbedding)
-
-export { FaissStore }

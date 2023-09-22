@@ -1,8 +1,9 @@
 import { Router } from "express";
-import dashboardRouter from "./dashboard/index.js";
+
+import chatbotRouter from "./dashboard.js";
 
 const appRouter = Router()
 
-appRouter.use('/dashboard',dashboardRouter)
+appRouter.use('/dashboard',chatbotRouter)
 
 export default appRouter
