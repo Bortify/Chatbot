@@ -2,12 +2,13 @@ import { ChatBotInfra } from '../infra/index.js'
 
 const getOnSocketConnection = (io) => (socket) => {
   const { chatId } = socket.handshake.auth
-  console.log('user connected with id', chatId)
+  const { chatbot } = socket
 
   const userChannelId = `${chatId}-user`
   const statusChannelId = `${chatId}-status`
-  const client = new ChatBotInfra()
-
+  const client = new ChatBotInfra({
+    indexName: chatbot.vectorStore.indexName,
+  })
 
   socket.join(userChannelId)
   socket.join(statusChannelId)
@@ -17,13 +18,13 @@ const getOnSocketConnection = (io) => (socket) => {
       agent: 'SERVER',
     })
 
-    try{
+    try {
       const ans = await client.predict(data.message)
-      console.log('bot says',ans)
+      console.log('bot says', ans)
       io.to(userChannelId).emit('message', {
         message: ans,
       })
-    } catch (e){
+    } catch (e) {
       console.error(e)
     } finally {
       io.to(statusChannelId).emit('status', {

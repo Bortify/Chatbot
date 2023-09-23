@@ -4,13 +4,16 @@ export function createSocket(
   url: string,
   {
     chatId,
+    identifier,
   }: {
     chatId: string
+    identifier: string
   }
 ) {
   const socketInit = io(url, {
     auth: {
-      chatId: chatId,
+      chatId,
+      identifier,
     },
     autoConnect: false,
   })

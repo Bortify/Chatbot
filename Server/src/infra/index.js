@@ -1,21 +1,23 @@
-import { retrievalQAchain } from './chains/index.js'
+import { retrievalQAchain, vectorDBQAChain } from './chains/index.js'
 import { getLLM } from './models/index.js'
+import { initializeVectorStore } from './vectorStore/index.js'
 
 export class ChatBotInfra {
-  #init = async () => {
-    this.generalQuestionChain = retrievalQAchain({
+  #init = async ({ indexName }) => {
+    const vectorStore = await initializeVectorStore(indexName)
+    this.chain = vectorDBQAChain({
       llm: this.llm,
-      retriever: contentStore.asRetriever(),
+      vectorStore
     })
   }
 
-  constructor() {
+  constructor({ indexName }) {
     this.llm = getLLM()
-    this.#init()
+    this.#init({ indexName })
   }
 
   predict = async (query) => {
-    const ans = await this.generalQuestionChain.call({ query })
+    const ans = await this.chain.call({ query })
     return ans.text
   }
 }

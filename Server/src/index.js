@@ -7,6 +7,7 @@ import { Server as ServerConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
 import appRouter from './routes/index.js'
 import './events/dataStream.js'
+import { attachChatBotMiddleware } from './middleware/socket.js'
 
 const { PORT } = ServerConfig
 
@@ -24,6 +25,7 @@ const io = new Server(server, {
   },
 })
 
+io.use(attachChatBotMiddleware)
 io.on('connection', getOnSocketConnection(io))
 
 server.listen(PORT)

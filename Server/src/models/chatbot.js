@@ -19,6 +19,9 @@ export const findChatbotWithKey = (key, filter = {}) => {
       key,
       ...filter,
     },
+    include: {
+      vectorStore: true
+    }
   })
 }
 

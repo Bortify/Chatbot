@@ -1,4 +1,3 @@
-import { Indexes } from '../config.js'
 import { pinecone } from './index.js'
 
 export const getChatbotIndex = (name) => {

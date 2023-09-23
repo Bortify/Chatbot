@@ -17,13 +17,22 @@ interface StatusEventProps {
   agent: 'SERVER' | 'CLIENT'
 }
 
-export default function useBot({ chatId }: { chatId: string }) {
+export default function useBot({
+  chatId,
+  identifier,
+}: {
+  chatId: string
+  identifier: string
+}) {
   const [socket, setSocket] = useState<Socket>()
   const [chat, setChat] = useState<ChatProps[]>([])
   const [isServerIdle, setIsServerIdle] = useState<boolean>(true)
 
   useEffect(() => {
-    const socketInit = createSocket('http://localhost:8080', { chatId })
+    const socketInit = createSocket('http://localhost:8080', {
+      chatId,
+      identifier,
+    })
     socketInit.connect()
     setSocket(socketInit)
     socketInit.on('message', (data: MessageEventProp) => {
@@ -34,9 +43,9 @@ export default function useBot({ chatId }: { chatId: string }) {
       const newChat = [...chat, recievedMessage]
       setChat(newChat)
     })
-  }, [isServerIdle, chat, chatId])
+  }, [isServerIdle, chat, chatId, identifier])
 
-  useEffect(()=>{
+  useEffect(() => {
     socket?.on('status', (data: StatusEventProps) => {
       if (data.agent === 'SERVER' && data.status === 'PROCESSING') {
         setIsServerIdle(false)
@@ -45,7 +54,7 @@ export default function useBot({ chatId }: { chatId: string }) {
         setIsServerIdle(true)
       }
     })
-  },[isServerIdle,socket])
+  }, [isServerIdle, socket])
 
   return {
     socket,
