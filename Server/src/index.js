@@ -12,9 +12,9 @@ const { PORT } = ServerConfig
 
 const app = Express()
 
+app.use(logger('dev'))
 app.use(Express.json())
 app.use(appRouter)
-app.use(logger('dev'))
 
 const server = createServer(app)
 const io = new Server(server, {
