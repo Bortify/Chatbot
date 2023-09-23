@@ -2,7 +2,14 @@ import { prisma } from './index.js'
 
 export const createChatbot = (data) => {
   return prisma.chatbot.create({
-    data,
+    data: {
+      vectorStore: {
+        create: {
+          indexName: 'chatbot',
+        },
+      },
+      ...data,
+    },
   })
 }
 
@@ -32,7 +39,7 @@ export const findChatbotById = (chatbotId, filter = {}) => {
       ...filter,
     },
     include: {
-      website: true,
+      dataLake: true,
       vectorStore: true,
     },
   })

@@ -1,6 +1,6 @@
 import { prisma } from './index.js'
 
-export const createWebsite = async (chatbotId, data) => {
+export const createDataStream = async (chatbotId, data) => {
   const chatBot = await prisma.chatbot.findFirst({
     where: {
       id: chatbotId,
@@ -10,7 +10,7 @@ export const createWebsite = async (chatbotId, data) => {
   if (!chatBot) {
     throw new Error('chatbot not found')
   }
-  return prisma.website.create({
+  return prisma.dataStream.create({
     data: {
       chatbotId,
       ...data,
@@ -18,8 +18,8 @@ export const createWebsite = async (chatbotId, data) => {
   })
 }
 
-export const updateWebsite = (chatbotId, websiteId, data, filter = {}) => {
-  return prisma.website.update({
+export const updateDataStream = (chatbotId, websiteId, data, filter = {}) => {
+  return prisma.dataStream.update({
     where: {
       id: websiteId,
       chatbotId: chatbotId,
@@ -29,12 +29,12 @@ export const updateWebsite = (chatbotId, websiteId, data, filter = {}) => {
   })
 }
 
-export const getWebsiteByIds = (chatbotId, websiteId, filter = {}) => {
-  return prisma.website.findFirst({
+export const getDataStreamById = (chatbotId, websiteId, filter = {}) => {
+  return prisma.dataStream.findFirst({
     where: {
       id: websiteId,
       chatbotId: chatbotId,
       ...filter,
-    },
+    }
   })
 }

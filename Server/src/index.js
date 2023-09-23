@@ -6,6 +6,7 @@ import { Server } from 'socket.io'
 import { Server as ServerConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
 import appRouter from './routes/index.js'
+import './events/dataStream.js'
 
 const { PORT } = ServerConfig
 

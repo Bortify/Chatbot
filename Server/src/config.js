@@ -21,5 +21,15 @@ export const Embeddings = {
 
 export const VectorStore = {
   PRODUCT_DB_DIR: 'vectorstore/products',
-  TEXT_CONTENT_DB_DIR: 'vectorstore/text'
+  TEXT_CONTENT_DB_DIR: 'vectorstore/text',
+}
+
+export const Indexes = {
+  NAME: process.env.PINECON_INDEX_NAME || 'chatbot',
+}
+
+export const Redis = {
+  URL: process.env.REDIS_URL,
+  USERNAME: process.env.REDIS_USERNAME,
+  PASSWORD: process.env.REDIS_PASSWORD,
 }

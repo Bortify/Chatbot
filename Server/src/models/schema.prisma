@@ -14,8 +14,9 @@ enum AuthorType {
   USER
 }
 
-enum VectorStoreType {
+enum DataStreamType {
   SITE
+  TEXT
 }
 
 // data models
@@ -44,18 +45,17 @@ model Chatbot {
   name          String
   configuration Json
   conversations Conversation[]
-  website       Website?
-  vectorStore   VectorStore[]
+  dataLake      DataStream[]
+  vectorStore   VectorStore?
   archived      Boolean        @default(false)
   active        Boolean        @default(true)
 }
 
 model VectorStore {
-  id        Int             @id @default(autoincrement())
-  indexId   String          @unique
-  type      VectorStoreType
-  chatbotId Int
-  chatbot   Chatbot?        @relation(fields: [chatbotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        Int      @id @default(autoincrement())
+  indexName String
+  chatbotId Int      @unique
+  chatbot   Chatbot? @relation(fields: [chatbotId], references: [id])
 }
 
 model Conversation {
@@ -75,12 +75,13 @@ model Message {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model Website {
-  id          Int      @id @default(autoincrement())
-  name        String
-  hostURL     String
-  activeLinks String[]
-  chatbotId   Int      @unique
-  chatbot     Chatbot? @relation(fields: [chatbotId], references: [id])
-  archived    Boolean  @default(false)
+model DataStream {
+  id        Int            @id @default(autoincrement())
+  name      String
+  data      Json
+  chatbotId Int            
+  chatbot   Chatbot?       @relation(fields: [chatbotId], references: [id])
+  archived  Boolean        @default(false)
+  type      DataStreamType
+  indexIds  String[]
 }
