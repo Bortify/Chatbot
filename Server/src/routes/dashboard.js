@@ -9,7 +9,8 @@ import {
   GetWebsite,
   ArchiveChatbot,
   ArchiveWebsite,
-  WebsiteStatusProvider
+  UpdatingWebsiteStatusProvider,
+  CreatingWebsiteStatusProvider
 } from '../controller/dashboard.js'
 
 const chatbotRouter = Router()
@@ -23,6 +24,7 @@ chatbotRouter.post('/:chatbotId/website', AddWebsiteToChatbot)
 chatbotRouter.put('/:chatbotId/website/:websiteId', UpdateWebsite)
 chatbotRouter.get('/:chatbotId/website/:websiteId', GetWebsite)
 chatbotRouter.delete('/:chatbotId/website/:websiteId', ArchiveWebsite)
-chatbotRouter.get('/:chatbotId/website/:websiteId/status', WebsiteStatusProvider)
+chatbotRouter.get('/:chatbotId/website/:websiteId/status/update', UpdatingWebsiteStatusProvider)
+chatbotRouter.get('/:chatbotId/website/:websiteId/status/create', CreatingWebsiteStatusProvider)
 
 export default chatbotRouter

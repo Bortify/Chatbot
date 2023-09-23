@@ -13,10 +13,7 @@ import {
 } from '../models/dataStream.js'
 import { siteLoader } from '../infra/loaders/index.js'
 import { documentSplitter } from '../utils/splitter.js'
-import {
-  getChatbotIndex,
-  insertIndex,
-} from '../models/pinecone.js'
+import { getChatbotIndex, insertIndex } from '../models/pinecone.js'
 import { openAIEmbedding } from '../infra/embedder/index.js'
 import { DataStreamType } from '@prisma/client'
 import eventManager from '../events/index.js'
@@ -107,6 +104,15 @@ export const AddWebsiteToChatbot = async (req, res) => {
       error,
     })
   }
+  const chatbot = await findChatbotById(chatbotId, {
+    archived: false,
+  })
+  if (!chatbot) {
+    return res.status(404).json({
+      message: 'chatbot not found',
+    })
+  }
+
   let dataStream = null
   try {
     dataStream = await createDataStream(chatbotId, {
@@ -128,52 +134,15 @@ export const AddWebsiteToChatbot = async (req, res) => {
       })
     }
   }
-  const siteContent = await Promise.all(
-    dataStream.data.activeLinks.map((url) => siteLoader(url))
-  )
-  const splittedContent = await documentSplitter(
-    siteContent.reduce((prev, curr) => {
-      prev = [...prev, ...curr]
-      return curr
-    }, [])
-  )
 
-  const chatbot = await findChatbotById(chatbotId)
-
-  if (!chatbot) {
-    return res.status(404).json({
-      error: 'chatbot not found',
-    })
-  }
-
-  const index = getChatbotIndex(chatbot.vectorStore.indexName) //add name from chatbot
-  const embeddings = await openAIEmbedding.embedDocuments(
-    splittedContent.map(({ pageContent }) => pageContent)
-  )
-  const dataToBeEmbedded = embeddings.map((values) => {
-    return {
-      id: uuidV1(),
-      values,
-    }
+  eventManager.emit('dataStream:website:create', {
+    dataStream,
+    chatbot,
   })
-  await insertIndex(index, dataToBeEmbedded)
-  try {
-    dataStream = await updateDataStream(
-      chatbotId,
-      dataStream.id,
-      {
-        indexIds: dataToBeEmbedded.map((d) => d.id),
-      },
-      {
-        archived: false,
-      }
-    )
-  } catch (e) {
-    return res.status(404).json({
-      error: 'chatbot not found',
-    })
-  }
-  return res.status(200).json(dataStream)
+
+  return res.status(202).json({
+    message: 'request accepted',
+  })
 }
 
 export const GetChatbotDetails = async (req, res) => {
@@ -234,6 +203,13 @@ export const UpdateWebsite = async (req, res) => {
     })
   }
 
+  const chatbot = await findChatbotById(chatbotId, { archived: false })
+  if (!chatbot) {
+    return res.status(404).json({
+      message: 'chat not found',
+    })
+  }
+
   let updatedDataStream = null
   try {
     updatedDataStream = await updateDataStream(
@@ -257,14 +233,10 @@ export const UpdateWebsite = async (req, res) => {
   }
 
   if (value?.activeLinks) {
-    await setDataInCache(`dataStream-${updatedDataStream.id}`, {
-      status: 'PROCESSING',
-      code: null,
-    })
     eventManager.emit('dataStream:website:update', {
-      chatbotId,
-      dataStreamObject: updatedDataStream,
-      activeLinks: value.activeLinks,
+      chatbot,
+      dataStream: updatedDataStream,
+      links: value.activeLinks,
     })
   }
   return res.status(202).json({
@@ -359,7 +331,7 @@ export const ArchiveWebsite = async (req, res) => {
   return res.status(200).json(updatedWebsite)
 }
 
-export const WebsiteStatusProvider = async (req, res) => {
+export const UpdatingWebsiteStatusProvider = async (req, res) => {
   let websiteId, chatbotId
 
   try {
@@ -378,8 +350,8 @@ export const WebsiteStatusProvider = async (req, res) => {
     })
   }
 
-  const chatbot = await updateChatBot(chatbotId, {
-    archived: true,
+  const chatbot = await findChatbotById(chatbotId, {
+    archived: false,
   })
   if (!chatbot) {
     return res.status(404).json({
@@ -397,13 +369,65 @@ export const WebsiteStatusProvider = async (req, res) => {
     })
   }
 
-  const dataFromCache = await getDataFromCache(`dataStream-${websiteId}`)
-  if(!dataFromCache){
+  const CACHING_KEY = `dataStream:website:update-${websiteId}`
+  const dataFromCache = await getDataFromCache(CACHING_KEY)
+  if (!dataFromCache) {
     return res.status(404).json({
-      message: 'no status available'
+      message: 'no status available',
     })
   }
-  if(dataFromCache.status === 'ERROR'){
+  if (dataFromCache.status === 'ERROR') {
+    return res.status(400).json(dataFromCache)
+  }
+  return res.status(200).json(dataFromCache)
+}
+
+export const CreatingWebsiteStatusProvider = async (req, res) => {
+  let websiteId, chatbotId
+
+  try {
+    websiteId = parseInt(req.params.websiteId)
+  } catch (e) {
+    res.status(404).json({
+      error: 'Invalid website id',
+    })
+  }
+
+  try {
+    chatbotId = parseInt(req.params.chatbotId)
+  } catch (e) {
+    res.status(404).json({
+      error: 'Invalid chatbot id',
+    })
+  }
+
+  const chatbot = await findChatbotById(chatbotId, {
+    archived: false,
+  })
+  if (!chatbot) {
+    return res.status(404).json({
+      message: 'chatbot not found',
+    })
+  }
+
+  const dataStream = await getDataStreamById(chatbotId, websiteId, {
+    archived: false,
+  })
+
+  if (!dataStream) {
+    return res.status(404).json({
+      message: 'website not found',
+    })
+  }
+
+  const CACHING_KEY = `dataStream:website:create-${websiteId}`
+  const dataFromCache = await getDataFromCache(CACHING_KEY)
+  if (!dataFromCache) {
+    return res.status(404).json({
+      message: 'no status available',
+    })
+  }
+  if (dataFromCache.status === 'ERROR') {
     return res.status(400).json(dataFromCache)
   }
   return res.status(200).json(dataFromCache)

@@ -1,6 +1,6 @@
 import { v1 as uuidV1 } from 'uuid'
 
-import redisClient, { setDataInCache } from '../cache/index.js'
+import { setDataInCache } from '../cache/index.js'
 import { DataStreamErrorCode } from '../constants/errorCodes.js'
 import { openAIEmbedding } from '../infra/embedder/index.js'
 import { siteLoader } from '../infra/loaders/index.js'
@@ -16,19 +16,14 @@ import { updateDataStream } from '../models/dataStream.js'
 
 eventManager.on(
   'dataStream:website:update',
-  async ({ chatbotId, dataStreamObject, activeLinks }) => {
-    const { id } = dataStreamObject
-    const siteContent = await Promise.all(
-      activeLinks.map((url) => siteLoader(url))
-    )
-    const chatbot = await findChatbotById(chatbotId)
-    if (!chatbot) {
-      await setDataInCache(`dataStream-${id}`, {
-        status: 'ERROR',
-        code: DataStreamErrorCode.chatbotNotFound,
-      })
-      return null
-    }
+  async ({ chatbot, dataStream, links }) => {
+    const CACHING_KEY = `dataStream:website:update-${dataStream.id}`
+    const { id } = dataStream
+    await setDataInCache(CACHING_KEY, {
+      status: 'PROCESSING',
+      code: null,
+    })
+    const siteContent = await Promise.all(links.map((url) => siteLoader(url)))
     const splittedContent = await documentSplitter(
       siteContent.reduce((prev, curr) => {
         prev = [...prev, ...curr]
@@ -36,7 +31,7 @@ eventManager.on(
       }, [])
     )
     const index = getChatbotIndex(chatbot.vectorStore.indexName)
-    await deleteIndex(index, dataStreamObject.indexIds)
+    await deleteIndex(index, dataStream.indexIds)
     const embeddings = await openAIEmbedding.embedDocuments(
       splittedContent.map(({ pageContent }) => pageContent)
     )
@@ -49,7 +44,7 @@ eventManager.on(
     await insertIndex(index, dataToBeEmbedded)
     try {
       await updateDataStream(
-        chatbotId,
+        chatbot.id,
         id,
         {
           indexIds: dataToBeEmbedded.map((d) => d.id),
@@ -58,12 +53,64 @@ eventManager.on(
           archived: false,
         }
       )
-      await setDataInCache(`dataStream-${id}`, {
+      await setDataInCache(CACHING_KEY, {
         status: 'SUCCEED',
         code: null,
       })
     } catch (e) {
-      await setDataInCache(`dataStream-${id}`, {
+      await setDataInCache(CACHING_KEY, {
+        status: 'ERROR',
+        code: DataStreamErrorCode.chatbotNotFound,
+      })
+    }
+  }
+)
+
+eventManager.on(
+  'dataStream:website:create',
+  async ({ dataStream, chatbot }) => {
+    const CACHING_KEY = `dataStream:website:create-${dataStream.id}`
+    await setDataInCache(CACHING_KEY, {
+      status: 'PROCESSING',
+      code: null,
+    })
+    const siteContent = await Promise.all(
+      dataStream.data.activeLinks.map((url) => siteLoader(url))
+    )
+    const splittedContent = await documentSplitter(
+      siteContent.reduce((prev, curr) => {
+        prev = [...prev, ...curr]
+        return curr
+      }, [])
+    )
+    const index = getChatbotIndex(chatbot.vectorStore.indexName)
+    const embeddings = await openAIEmbedding.embedDocuments(
+      splittedContent.map(({ pageContent }) => pageContent)
+    )
+    const vectoredForm = embeddings.map((values) => {
+      return {
+        id: uuidV1(),
+        values,
+      }
+    })
+    await insertIndex(index, vectoredForm)
+    try {
+      dataStream = await updateDataStream(
+        chatbot.id,
+        dataStream.id,
+        {
+          indexIds: vectoredForm.map((d) => d.id),
+        },
+        {
+          archived: false,
+        }
+      )
+      await setDataInCache(CACHING_KEY, {
+        status: 'SUCCEED',
+        code: null,
+      })
+    } catch (e) {
+      await setDataInCache(CACHING_KEY, {
         status: 'ERROR',
         code: DataStreamErrorCode.chatbotNotFound,
       })
