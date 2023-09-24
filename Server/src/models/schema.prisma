@@ -30,13 +30,15 @@ model Organisation {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  name         String
-  email        String
-  phone        String
-  passwordHash String
-  passwordSalt String
-  organisation Organisation[]
+  id              Int            @id @default(autoincrement())
+  name            String
+  email           String
+  phone           String?
+  passwordHash    String
+  salt            String
+  organisation    Organisation[]
+  archived        Boolean        @default(false)
+  isEmailVerified Boolean        @default(false)
 }
 
 model Chatbot {
@@ -79,7 +81,7 @@ model DataStream {
   id        Int            @id @default(autoincrement())
   name      String
   data      Json
-  chatbotId Int            
+  chatbotId Int
   chatbot   Chatbot?       @relation(fields: [chatbotId], references: [id])
   archived  Boolean        @default(false)
   type      DataStreamType

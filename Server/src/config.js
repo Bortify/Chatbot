@@ -33,3 +33,13 @@ export const Redis = {
   USERNAME: process.env.REDIS_USERNAME,
   PASSWORD: process.env.REDIS_PASSWORD,
 }
+
+export const Auth = {
+  SECRET: process.env.JWT_SECRET || 'secret',
+  TOKEN_EXPIRY: parseInt(process.env.JWT_TOKEN_EXPIRY || 60 * 60 * 24 * 1000), // 1 day
+}
+
+export const EmailClient = {
+  API: process.env.MAILGUN_API || 'api',
+  DOMAIN: process.env.MAILGUN_DOMAIN || 'domain'
+}

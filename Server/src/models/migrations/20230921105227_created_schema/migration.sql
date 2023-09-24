@@ -19,7 +19,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
-    "passwordSalt" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
