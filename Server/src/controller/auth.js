@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { randomBytes } from 'crypto'
 import bcrypt from 'bcrypt'
 import JWT from 'jsonwebtoken'
 
@@ -136,6 +135,7 @@ export const GetProfile = async (req, res) => {
     email: req.user.email,
     phone: req.user?.phone || null,
     isEmailVerified: req.user.isEmailVerified,
+    organisations: req.user.organisation,
   })
 }
 
@@ -312,5 +312,73 @@ export const HandleEmailVerifyingRequest = async (req, res) => {
 
   return res.status(200).json({
     message: 'mail verified successfully',
+  })
+}
+
+export const UpdateProfile = async (req, res) => {
+  const schema = Joi.object({
+    email: Joi.string().email().optional(),
+    phone: Joi.string()
+      .pattern(/r'^\d{10}$'/)
+      .optional(),
+    name: Joi.string().min(1).max(200).optional(),
+  })
+
+  const { value, error } = schema.validate(req.body)
+
+  if (error) {
+    return res.status(400).json({
+      error,
+    })
+  }
+
+  let user = null
+
+  if (value?.email) {
+    user = await updateUserById(req.user.id, {
+      ...value,
+      isEmailVerified: false,
+    })
+  } else {
+    user = await updateUserById(req.user.id, value)
+  }
+
+  return res.status(200).json(user)
+}
+
+export const ArchiveUser = async (req, res) => {
+  const schema = Joi.object({
+    password: Joi.string()
+      .pattern(
+        /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,}$/
+      )
+      .required(),
+  })
+
+  const { value, error } = schema.validate(req.body)
+
+  if (error) {
+    return res.status(400).json({
+      error,
+    })
+  }
+
+  const isPasswordSame = await bcrypt.compare(
+    value.password,
+    req.user.passwordHash
+  )
+
+  if (!isPasswordSame) {
+    return res.status(400).json({
+      error: 'password is incorrect',
+    })
+  }
+
+  await updateUserById(req.user.id, {
+    archived: true,
+  })
+
+  return res.status(200).json({
+    message: 'user deleted',
   })
 }

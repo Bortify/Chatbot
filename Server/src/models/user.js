@@ -19,6 +19,9 @@ export const findActiveUserById = (id) =>
       id,
       archived: false,
     },
+    include: {
+      organisation: true,
+    },
   })
 
 export const updateUserById = (id, data) =>

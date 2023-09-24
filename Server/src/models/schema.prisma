@@ -21,12 +21,14 @@ enum DataStreamType {
 
 // data models
 model Organisation {
-  id          Int    @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String
   logo        String
   userId      Int
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chatbots    Chatbot[]
+  archived    Boolean   @default(false)
 }
 
 model User {
@@ -42,15 +44,17 @@ model User {
 }
 
 model Chatbot {
-  id            Int            @id @default(autoincrement())
-  key           String?        @default(uuid())
-  name          String
-  configuration Json
-  conversations Conversation[]
-  dataLake      DataStream[]
-  vectorStore   VectorStore?
-  archived      Boolean        @default(false)
-  active        Boolean        @default(true)
+  id             Int            @id @default(autoincrement())
+  key            String?        @default(uuid())
+  name           String
+  configuration  Json
+  conversations  Conversation[]
+  dataLake       DataStream[]
+  vectorStore    VectorStore?
+  archived       Boolean        @default(false)
+  active         Boolean        @default(true)
+  organisationId Int
+  organisation   Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model VectorStore {

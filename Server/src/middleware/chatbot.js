@@ -1,29 +1,26 @@
-import { findChatbotWithKey } from '../models/chatbot.js'
+import { findChatbotById } from '../models/chatbot'
 
-// TODO (Hiten): use this middleware for sockets to identify chatbot
-
-export const AttachChatBotToRequest = async (req, res, next) => {
-  const key = req.header('chatbot-key')
-  if (!key) {
-    return res.status(401).json({
-      error: [
-        {
-          message: 'key is not present',
-        },
-      ],
+export const attachChatbotMiddleware = async (req, res, next) => {
+  let chatbotId = null
+  
+  try {
+    chatbotId = parseInt(req.params.chatbotId)
+  } catch (e) {
+    return res.status(400).json({
+      error: 'invalid chat id',
     })
   }
-  const chatbot = await findChatbotWithKey(key)
+
+  const chatbot = await findChatbotById(chatbotId, {
+    organisationId: req.organisation.id,
+  })
+
   if (!chatbot) {
-    return res.status(401).json({
-      error: [
-        {
-          message: 'key is invalid',
-        },
-      ],
+    return res.status(404).json({
+      error: 'chatbot not found',
     })
   }
-  console.log(chatbot)
+
   req.chatbot = chatbot
   next()
 }

@@ -421,14 +421,17 @@ export const CreatingWebsiteStatusProvider = async (req, res) => {
   }
 
   const CACHING_KEY = `dataStream:website:create-${websiteId}`
+
   const dataFromCache = await getDataFromCache(CACHING_KEY)
   if (!dataFromCache) {
     return res.status(404).json({
       message: 'no status available',
     })
   }
+
   if (dataFromCache.status === 'ERROR') {
     return res.status(400).json(dataFromCache)
   }
+  
   return res.status(200).json(dataFromCache)
 }

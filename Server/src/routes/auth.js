@@ -7,6 +7,8 @@ import {
   HandlePasswordResetRequest,
   SendEmailVerifyingRequest,
   HandleEmailVerifyingRequest,
+  UpdateProfile,
+  ArchiveUser,
 } from '../controller/auth.js'
 import { addUserMiddleware } from '../middleware/auth.js'
 
@@ -20,6 +22,9 @@ authRouter.post('/reset/send', SendResetPasswordRequest)
 authRouter.post('/reset/handle', HandlePasswordResetRequest)
 
 authRouter.get('/', addUserMiddleware, GetProfile)
+authRouter.put('/', addUserMiddleware, UpdateProfile)
+authRouter.delete('/', addUserMiddleware, ArchiveUser)
+
 authRouter.post('/verify/send', addUserMiddleware, SendEmailVerifyingRequest)
 
 export default authRouter
