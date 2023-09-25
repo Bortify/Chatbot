@@ -1,18 +1,19 @@
 import { Router } from 'express'
 
 import {
-  AddWebsiteToChatbot,
+  AddDataStreamToChatbot,
   CreateChatBot,
   UpdateChatbot,
   GetChatbotDetails,
-  UpdateWebsite,
-  GetWebsite,
+  UpdateDataStream,
+  GetDataStream,
   ArchiveChatbot,
-  ArchiveWebsite,
-  UpdatingWebsiteStatusProvider,
-  CreatingWebsiteStatusProvider,
+  ArchiveDataStream,
+  UpdatingDataStreamStatusProvider,
+  CreatingDataStreamStatusProvider,
 } from '../controller/chatbot.js'
 import { attachChatbotMiddleware } from '../middleware/chatbot.js'
+import { attachDataStreamMiddleware } from '../middleware/dataStream.js'
 
 const chatbotRouter = Router()
 
@@ -22,35 +23,41 @@ chatbotRouter.get('/:chatbotId', attachChatbotMiddleware, GetChatbotDetails)
 chatbotRouter.delete('/:chatbotId', attachChatbotMiddleware, ArchiveChatbot)
 
 chatbotRouter.post(
-  '/:chatbotId/website',
+  '/:chatbotId/data',
   attachChatbotMiddleware,
-  AddWebsiteToChatbot
+  AddDataStreamToChatbot
 )
 chatbotRouter.put(
-  '/:chatbotId/website/:websiteId',
+  '/:chatbotId/data/:dataStreamId',
   attachChatbotMiddleware,
-  UpdateWebsite
+  attachDataStreamMiddleware,
+  UpdateDataStream
 )
 chatbotRouter.get(
-  '/:chatbotId/website/:websiteId',
+  '/:chatbotId/data/:dataStreamId',
   attachChatbotMiddleware,
-  GetWebsite
+  attachDataStreamMiddleware,
+  GetDataStream
 )
 chatbotRouter.delete(
-  '/:chatbotId/website/:websiteId',
+  '/:chatbotId/data/:dataStreamId',
   attachChatbotMiddleware,
-  ArchiveWebsite
+  attachDataStreamMiddleware,
+  ArchiveDataStream
 )
 
+// status for data stream jobs.
 chatbotRouter.get(
-  '/:chatbotId/website/:websiteId/status/update',
+  '/:chatbotId/data/:dataStreamId/status/update',
   attachChatbotMiddleware,
-  UpdatingWebsiteStatusProvider
+  attachDataStreamMiddleware,
+  UpdatingDataStreamStatusProvider
 )
 chatbotRouter.get(
-  '/:chatbotId/website/:websiteId/status/create',
+  '/:chatbotId/data/:dataStreamId/status/create',
   attachChatbotMiddleware,
-  CreatingWebsiteStatusProvider
+  attachDataStreamMiddleware,
+  CreatingDataStreamStatusProvider
 )
 
 export default chatbotRouter

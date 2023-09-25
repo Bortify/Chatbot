@@ -7,10 +7,10 @@ import {
 export const CreateOrganisation = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(2).max(200).required(),
-    description: Joi.string().optional(),
+    description: Joi.string().optional().default(""),
     logo: Joi.string()
       .pattern(/^https:\/\//)
-      .optional(),
+      .optional().default(""),
   })
 
   const { value, error } = schema.validate(req.body)

@@ -8,13 +8,12 @@ import { attachOrganisationMiddleware } from '../middleware/organisation.js'
 
 const appRouter = Router()
 
-// TODO (HITEN): Create Middleware to attach user and check if request coming for chatbot is valid or not.
 appRouter.use('/auth', authRouter)
+appRouter.use('/organisation', addUserMiddleware, organisationRouter)
 appRouter.use(
-  '/chatbot/:orgId',
+  '/organisation/:orgId/chatbot',
   addUserMiddleware,
   attachOrganisationMiddleware,
   chatbotRouter
 )
-appRouter.use('/organisation', addUserMiddleware, organisationRouter)
 export default appRouter

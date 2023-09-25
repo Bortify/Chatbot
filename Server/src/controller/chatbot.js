@@ -1,21 +1,12 @@
 import Joi from 'joi'
-import { v1 as uuidV1 } from 'uuid'
+import { DataStreamType } from '@prisma/client'
 
 import {
   createChatbot,
   findChatbotById,
   updateChatBot,
 } from '../models/chatbot.js'
-import {
-  createDataStream,
-  getDataStreamById,
-  updateDataStream,
-} from '../models/dataStream.js'
-import { siteLoader } from '../infra/loaders/index.js'
-import { documentSplitter } from '../utils/splitter.js'
-import { getChatbotIndex, insertIndex } from '../models/pinecone.js'
-import { openAIEmbedding } from '../infra/embedder/index.js'
-import { DataStreamType } from '@prisma/client'
+import { createDataStream, updateDataStream } from '../models/dataStream.js'
 import eventManager from '../events/index.js'
 import { getDataFromCache, setDataInCache } from '../cache/index.js'
 
@@ -31,23 +22,16 @@ export const CreateChatBot = async (req, res) => {
       error,
     })
   }
-  const chatBot = await createChatbot(value)
+  const chatBot = await createChatbot({
+    ...value,
+    organisationId: req.organisation.id,
+  })
   return res.status(200).json({
     ...chatBot,
   })
 }
 
 export const UpdateChatbot = async (req, res) => {
-  let chatbotId
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).optional(),
     configuration: Joi.object().optional(),
@@ -64,7 +48,7 @@ export const UpdateChatbot = async (req, res) => {
   let updatedChatbot = null
 
   try {
-    updatedChatbot = await updateChatBot(chatbotId, value, {
+    updatedChatbot = await updateChatBot(req.chatbot.id, value, {
       archived: false,
     })
   } catch (e) {
@@ -76,17 +60,7 @@ export const UpdateChatbot = async (req, res) => {
   return res.status(200).json(updatedChatbot)
 }
 
-export const AddWebsiteToChatbot = async (req, res) => {
-  let chatbotId
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'invalid chatbot id',
-    })
-  }
-
+export const AddDataStreamToChatbot = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).required(),
     hostURL: Joi.string()
@@ -104,7 +78,7 @@ export const AddWebsiteToChatbot = async (req, res) => {
       error,
     })
   }
-  const chatbot = await findChatbotById(chatbotId, {
+  const chatbot = await findChatbotById(req.chatbot.id, {
     archived: false,
   })
   if (!chatbot) {
@@ -115,7 +89,7 @@ export const AddWebsiteToChatbot = async (req, res) => {
 
   let dataStream = null
   try {
-    dataStream = await createDataStream(chatbotId, {
+    dataStream = await createDataStream(req.chatbot.id, {
       name: value.name,
       data: {
         activeLinks: value.activeLinks,
@@ -146,45 +120,10 @@ export const AddWebsiteToChatbot = async (req, res) => {
 }
 
 export const GetChatbotDetails = async (req, res) => {
-  let chatbotId
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
-  const chatbot = await findChatbotById(chatbotId, { archived: false })
-
-  if (!chatbot) {
-    return res.status(404).json({
-      message: 'chatbot not found',
-    })
-  }
-  return res.status(200).json(chatbot)
+  return res.status(200).json(req.chatbot)
 }
 
-export const UpdateWebsite = async (req, res) => {
-  let websiteId, chatbotId
-
-  try {
-    websiteId = parseInt(req.params.websiteId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid website id',
-    })
-  }
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
+export const UpdateDataStream = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).optional(),
     hostURL: Joi.string()
@@ -203,18 +142,12 @@ export const UpdateWebsite = async (req, res) => {
     })
   }
 
-  const chatbot = await findChatbotById(chatbotId, { archived: false })
-  if (!chatbot) {
-    return res.status(404).json({
-      message: 'chat not found',
-    })
-  }
-
   let updatedDataStream = null
+
   try {
     updatedDataStream = await updateDataStream(
-      chatbotId,
-      websiteId,
+      req.chatbot.id,
+      req.dataStream.id,
       {
         name: value.name,
         data: {
@@ -234,7 +167,7 @@ export const UpdateWebsite = async (req, res) => {
 
   if (value?.activeLinks) {
     eventManager.emit('dataStream:website:update', {
-      chatbot,
+      chatbot: req.chatbot,
       dataStream: updatedDataStream,
       links: value.activeLinks,
     })
@@ -244,50 +177,12 @@ export const UpdateWebsite = async (req, res) => {
   })
 }
 
-export const GetWebsite = async (req, res) => {
-  let websiteId, chatbotId
-
-  try {
-    websiteId = parseInt(req.params.websiteId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid website id',
-    })
-  }
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
-  let website = await getDataStreamById(chatbotId, websiteId, {
-    archived: false,
-  })
-
-  if (!website) {
-    return res.status(404).json({
-      message: 'website not found',
-    })
-  }
-
-  return res.status(200).json(website)
+export const GetDataStream = async (req, res) => {
+  return res.status(200).json(req.dataStream)
 }
 
 export const ArchiveChatbot = async (req, res) => {
-  let chatbotId
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
-  const chatbot = await updateChatBot(chatbotId, {
+  const chatbot = await updateChatBot(req.chatbot.id, {
     archived: true,
   })
   if (!chatbot) {
@@ -298,78 +193,23 @@ export const ArchiveChatbot = async (req, res) => {
   return res.status(200).json(chatbot)
 }
 
-export const ArchiveWebsite = async (req, res) => {
-  let websiteId, chatbotId
-
-  try {
-    websiteId = parseInt(req.params.websiteId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid website id',
-    })
-  }
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
+export const ArchiveDataStream = async (req, res) => {
   let updatedWebsite = null
   try {
-    updatedWebsite = await updateDataStream(chatbotId, websiteId, {
+    updatedWebsite = await updateDataStream(req.chatbot.id, req.dataStream.id, {
       archived: true,
     })
   } catch (e) {
     return res.status(404).json({
-      message: 'site not found',
+      message: 'data stream not found',
     })
   }
 
   return res.status(200).json(updatedWebsite)
 }
 
-export const UpdatingWebsiteStatusProvider = async (req, res) => {
-  let websiteId, chatbotId
-
-  try {
-    websiteId = parseInt(req.params.websiteId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid website id',
-    })
-  }
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
-  const chatbot = await findChatbotById(chatbotId, {
-    archived: false,
-  })
-  if (!chatbot) {
-    return res.status(404).json({
-      message: 'chatbot not found',
-    })
-  }
-
-  const dataStream = await getDataStreamById(chatbotId, websiteId, {
-    archived: false,
-  })
-
-  if (!dataStream) {
-    return res.status(404).json({
-      message: 'website not found',
-    })
-  }
-
-  const CACHING_KEY = `dataStream:website:update-${websiteId}`
+export const UpdatingDataStreamStatusProvider = async (req, res) => {
+  const CACHING_KEY = `dataStream:website:update-${req.dataStream.id}`
   const dataFromCache = await getDataFromCache(CACHING_KEY)
   if (!dataFromCache) {
     return res.status(404).json({
@@ -382,45 +222,8 @@ export const UpdatingWebsiteStatusProvider = async (req, res) => {
   return res.status(200).json(dataFromCache)
 }
 
-export const CreatingWebsiteStatusProvider = async (req, res) => {
-  let websiteId, chatbotId
-
-  try {
-    websiteId = parseInt(req.params.websiteId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid website id',
-    })
-  }
-
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    res.status(404).json({
-      error: 'Invalid chatbot id',
-    })
-  }
-
-  const chatbot = await findChatbotById(chatbotId, {
-    archived: false,
-  })
-  if (!chatbot) {
-    return res.status(404).json({
-      message: 'chatbot not found',
-    })
-  }
-
-  const dataStream = await getDataStreamById(chatbotId, websiteId, {
-    archived: false,
-  })
-
-  if (!dataStream) {
-    return res.status(404).json({
-      message: 'website not found',
-    })
-  }
-
-  const CACHING_KEY = `dataStream:website:create-${websiteId}`
+export const CreatingDataStreamStatusProvider = async (req, res) => {
+  const CACHING_KEY = `dataStream:website:create-${req.dataStream.id}`
 
   const dataFromCache = await getDataFromCache(CACHING_KEY)
   if (!dataFromCache) {
@@ -432,6 +235,6 @@ export const CreatingWebsiteStatusProvider = async (req, res) => {
   if (dataFromCache.status === 'ERROR') {
     return res.status(400).json(dataFromCache)
   }
-  
+
   return res.status(200).json(dataFromCache)
 }

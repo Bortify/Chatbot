@@ -1,4 +1,4 @@
-import { findChatbotById } from '../models/chatbot'
+import { findChatbotById } from '../models/chatbot.js'
 
 export const attachChatbotMiddleware = async (req, res, next) => {
   let chatbotId = null
@@ -13,6 +13,7 @@ export const attachChatbotMiddleware = async (req, res, next) => {
 
   const chatbot = await findChatbotById(chatbotId, {
     organisationId: req.organisation.id,
+    archived: false
   })
 
   if (!chatbot) {

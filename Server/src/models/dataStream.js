@@ -18,10 +18,10 @@ export const createDataStream = async (chatbotId, data) => {
   })
 }
 
-export const updateDataStream = (chatbotId, websiteId, data, filter = {}) => {
+export const updateDataStream = (chatbotId, dataStreamId, data, filter = {}) => {
   return prisma.dataStream.update({
     where: {
-      id: websiteId,
+      id: dataStreamId,
       chatbotId: chatbotId,
       ...filter,
     },
@@ -29,10 +29,10 @@ export const updateDataStream = (chatbotId, websiteId, data, filter = {}) => {
   })
 }
 
-export const getDataStreamById = (chatbotId, websiteId, filter = {}) => {
+export const getDataStreamById = (chatbotId, dataStreamId, filter = {}) => {
   return prisma.dataStream.findFirst({
     where: {
-      id: websiteId,
+      id: dataStreamId,
       chatbotId: chatbotId,
       ...filter,
     }
