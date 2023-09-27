@@ -11,29 +11,31 @@ export class EmailClient {
     })
   }
 
-  sendEmailVerficationEmail = ({ email, token }) => {
+  sendEmailVerficationEmail = ({ email, token, name }) => {
     const payload = {
       from: 'Hiten Vats <hitenvats16@gmail.com>',
       to: [email],
       subject: `Verify your email`,
-      template: 'meet_schedule',
+      template: 'email verification',
       'h:X-Mailgun-Variables': JSON.stringify({
         token,
         email,
+        name,
       }),
     }
     return this.#client.messages().send(payload)
   }
 
-  sendPasswordResetEmail = ({ email, token }) => {
+  sendPasswordResetEmail = ({ email, token, name }) => {
     const payload = {
       from: 'Hiten Vats <hitenvats16@gmail.com>',
       to: [email],
       subject: `Verify your email`,
-      template: 'meet_schedule',
+      template: 'password reset',
       'h:X-Mailgun-Variables': JSON.stringify({
         email,
         token,
+        name,
       }),
     }
     return this.#client.messages().send(payload)

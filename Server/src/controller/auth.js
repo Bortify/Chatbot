@@ -175,6 +175,7 @@ export const SendResetPasswordRequest = async (req, res) => {
     await mailClient.sendPasswordResetEmail({
       email: user.email,
       token,
+      name: user.name
     })
   } catch (e) {
     return res.status(500).json({
@@ -214,7 +215,7 @@ export const HandlePasswordResetRequest = async (req, res) => {
   const { email } = decodedValue
   const user = await findActiveUserByEmail(email)
   try {
-    JWT.verify(token, `${Auth.SECRET}.${user.salt}`)
+    JWT.verify(value.token, `${Auth.SECRET}.${user.salt}`)
   } catch (e) {
     return res.status(400).json({
       error: 'Token is Invalid',
@@ -253,6 +254,7 @@ export const SendEmailVerifyingRequest = async (req, res) => {
     await mailClient.sendEmailVerficationEmail({
       email: user.email,
       token,
+      name: user.name
     })
     return res.status(200).json({
       message: 'email sent',
@@ -285,7 +287,8 @@ export const HandleEmailVerifyingRequest = async (req, res) => {
     })
   }
 
-  const decodedValue = JWT.decode(token)
+  const decodedValue = JWT.decode(value.token)
+  
   if (!decodedValue) {
     return res.status(400).json({
       error: 'token is incorrect',
@@ -299,7 +302,7 @@ export const HandleEmailVerifyingRequest = async (req, res) => {
   }
 
   try {
-    JWT.verify(token, `${Auth.SECRET}.${user.salt}`)
+    JWT.verify(value.token, `${Auth.SECRET}.${user.salt}`)
   } catch (e) {
     return res.status(400).json({
       error: 'token is incorrect',

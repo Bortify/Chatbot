@@ -2,7 +2,7 @@
   "name": "chatbot-server",
   "type": "module",
   "prisma": {
-    "schema": "src/models/schema.prisma"
+    "schema": "src/models/prisma/schema.prisma"
   },
   "version": "1.0.0",
   "description": "",

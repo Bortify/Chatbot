@@ -16,7 +16,6 @@ const authRouter = Router()
 
 authRouter.post('/signup', CreateAccount)
 authRouter.post('/signin', SignIn)
-authRouter.post('/verify/handle', HandleEmailVerifyingRequest)
 
 authRouter.post('/reset/send', SendResetPasswordRequest)
 authRouter.post('/reset/handle', HandlePasswordResetRequest)
@@ -25,6 +24,7 @@ authRouter.get('/', addUserMiddleware, GetProfile)
 authRouter.put('/', addUserMiddleware, UpdateProfile)
 authRouter.delete('/', addUserMiddleware, ArchiveUser)
 
+authRouter.post('/verify/handle', HandleEmailVerifyingRequest)
 authRouter.post('/verify/send', addUserMiddleware, SendEmailVerifyingRequest)
 
 export default authRouter
