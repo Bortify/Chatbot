@@ -1,4 +1,5 @@
 import { similaritySearch } from './search.js'
+import { getResponse } from './completion.js'
 
 export class ChatBotInfra {
   constructor({ indexName }) {
@@ -6,7 +7,20 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    const result = await similaritySearch(this.indexName, query)
-    return result
+    try {
+      const context = await similaritySearch(this.indexName, query)
+      const result = await getResponse(
+        {
+          context,
+          query,
+          errorText: `I can't assist you with that`
+        },
+        'chatbot:response'
+      )
+      return result
+    } catch (e) {
+      console.log(e)
+      return null
+    }
   }
 }
