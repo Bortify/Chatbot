@@ -7,7 +7,9 @@ export const attachChatBotMiddleware = async (socket, next) => {
     active: true,
   })
   if (!chatbot) {
-    next(new Error('Invalid Chatbot Identifier'))
+    socket.disconnect()
+    console.log('invalid chatbot')
+    return next(new Error('Invalid Chatbot Identifier'))
   } else {
     socket.chatbot = chatbot
     next()

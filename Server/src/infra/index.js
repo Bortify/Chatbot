@@ -1,23 +1,12 @@
-import { retrievalQAchain, vectorDBQAChain } from './chains/index.js'
-import { getLLM } from './models/index.js'
-import { initializeVectorStore } from './vectorStore/index.js'
+import { similaritySearch } from './search.js'
 
 export class ChatBotInfra {
-  #init = async ({ indexName }) => {
-    const vectorStore = await initializeVectorStore(indexName)
-    this.chain = vectorDBQAChain({
-      llm: this.llm,
-      vectorStore
-    })
-  }
-
   constructor({ indexName }) {
-    this.llm = getLLM()
-    this.#init({ indexName })
+    this.indexName = indexName
   }
 
   predict = async (query) => {
-    const ans = await this.llm.predict(query)
-    return ans
+    const result = await similaritySearch(this.indexName, query)
+    return result
   }
 }

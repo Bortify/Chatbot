@@ -10,6 +10,8 @@ const getOnSocketConnection = (io) => (socket) => {
     indexName: chatbot.vectorStore.indexName,
   })
 
+  console.log('chatbot connected with name',chatbot.name)
+
   socket.join(userChannelId)
   socket.join(statusChannelId)
   socket.on('message', async (data) => {

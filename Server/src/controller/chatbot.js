@@ -168,8 +168,7 @@ export const UpdateDataStream = async (req, res) => {
   if (value?.activeLinks) {
     eventManager.emit('dataStream:website:update', {
       chatbot: req.chatbot,
-      dataStream: updatedDataStream,
-      links: value.activeLinks,
+      dataStream: updatedDataStream
     })
   }
   return res.status(202).json({
