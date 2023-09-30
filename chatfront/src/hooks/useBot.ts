@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Socket } from 'socket.io-client'
+import { v4 as uuid } from 'uuid'
 
 import { createSocket } from '../sockets'
 
@@ -17,20 +18,14 @@ interface StatusEventProps {
   agent: 'SERVER' | 'CLIENT'
 }
 
-export default function useBot({
-  chatId,
-  identifier,
-}: {
-  chatId: string
-  identifier: string
-}) {
+export default function useBot({ identifier }: { identifier: string }) {
   const [socket, setSocket] = useState<Socket>()
   const [chat, setChat] = useState<ChatProps[]>([])
   const [isServerIdle, setIsServerIdle] = useState<boolean>(true)
 
   useEffect(() => {
     const socketInit = createSocket('http://localhost:8080', {
-      chatId,
+      chatId: getOrCreateChatId(),
       identifier,
     })
     socketInit.connect()
@@ -43,7 +38,7 @@ export default function useBot({
       const newChat = [...chat, recievedMessage]
       setChat(newChat)
     })
-  }, [isServerIdle, chat, chatId, identifier])
+  }, [isServerIdle, chat, identifier])
 
   useEffect(() => {
     socket?.on('status', (data: StatusEventProps) => {
@@ -61,5 +56,17 @@ export default function useBot({
     chat,
     setChat,
     isServerIdle,
+  }
+}
+
+function getOrCreateChatId(): string {
+  const key = '__INDIEBOT_CHAT_ID__'
+  const chatId = localStorage.getItem(key)
+  if (chatId) {
+    return chatId
+  } else {
+    const id: string = uuid()
+    localStorage.setItem(key, id)
+    return id
   }
 }

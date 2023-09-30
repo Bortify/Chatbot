@@ -8,9 +8,9 @@ export const createTextFromTemplate = (
       throw new Error(`key "${key}" is not included in input variables.`)
     }
   }
-  let text = ''
+  let text = template
   for (let variable of inputVariables) {
-    text = template.replace(`{${variable}}`, inputVariableObject[variable])
+    text = text.replace(`{${variable}}`, inputVariableObject[variable])
   }
   return text
 }

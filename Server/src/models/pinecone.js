@@ -23,11 +23,11 @@ export const deleteIndex = (indexName, ids) => {
   return index.deleteMany(ids)
 }
 
-export const nearestSearch = (indexName, vector) => {
+export const nearestSearch = (indexName, vector, topK) => {
   const index = getIndex(indexName)
   return index.query({
     includeMetadata: true,
     vector: vector,
-    topK: 1,
+    topK
   })
 }

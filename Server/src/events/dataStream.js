@@ -23,7 +23,7 @@ eventManager.on(
       dataStream.data.activeLinks.map((url) => siteLoader(url))
     )
     const chunks = textSplitter(siteContent.join(' '), {
-      maximumChunkSize: 200,
+      maximumChunkSize: 20,
     })
     const embeddings = await Promise.all(
       chunks.map((text) => textEmbedder(text))
@@ -75,7 +75,7 @@ eventManager.on(
       dataStream.data.activeLinks.map((url) => siteLoader(url))
     )
     const chunks = textSplitter(siteContent.join(' '), {
-      maximumChunkSize: 200,
+      maximumChunkSize: 20,
     })
     const embeddings = await Promise.all(
       chunks.map((text) => textEmbedder(text))

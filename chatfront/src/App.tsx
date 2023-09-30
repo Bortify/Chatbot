@@ -12,7 +12,6 @@ interface AppProps {
 
 function App({ identifier }: AppProps) {
   const { socket, chat, setChat, isServerIdle } = useBot({
-    chatId: '66045067-6ee4-492c-80f0-ecf26ae4cfc1',
     identifier,
   })
 

@@ -54,7 +54,7 @@ CREATE TABLE "VectorStore" (
 
 -- CreateTable
 CREATE TABLE "Conversation" (
-    "id" SERIAL NOT NULL,
+    "id" INTEGER NOT NULL,
     "name" TEXT NOT NULL DEFAULT 'Anonymous',
     "chatbotId" INTEGER NOT NULL,
 
