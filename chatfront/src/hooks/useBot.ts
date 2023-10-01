@@ -22,6 +22,7 @@ export default function useBot({ identifier }: { identifier: string }) {
   const [socket, setSocket] = useState<Socket>()
   const [chat, setChat] = useState<ChatProps[]>([])
   const [isServerIdle, setIsServerIdle] = useState<boolean>(true)
+  const [chatbotEnabled, setChatbotEnabled] = useState<boolean>(false)
 
   useEffect(() => {
     const socketInit = createSocket('http://localhost:8080', {
@@ -37,6 +38,9 @@ export default function useBot({ identifier }: { identifier: string }) {
       }
       const newChat = [...chat, recievedMessage]
       setChat(newChat)
+    })
+    socketInit.on('connect', () => {
+      setChatbotEnabled(true)
     })
   }, [isServerIdle, chat, identifier])
 
@@ -56,6 +60,7 @@ export default function useBot({ identifier }: { identifier: string }) {
     chat,
     setChat,
     isServerIdle,
+    chatbotEnabled
   }
 }
 
