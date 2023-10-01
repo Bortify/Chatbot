@@ -8,6 +8,8 @@ import {
 } from '../middleware/auth.js'
 import organisationRouter from './organisation.js'
 import { attachOrganisationMiddleware } from '../middleware/organisation.js'
+import messageRouter from './messages.js'
+import { attachConversationMiddleware } from '../middleware/conversation.js'
 
 const appRouter = Router()
 
@@ -24,5 +26,10 @@ appRouter.use(
   attachOrganisationMiddleware,
   checkForEmailVerfification,
   chatbotRouter
+)
+appRouter.use(
+  '/conversation/:conversationId',
+  attachConversationMiddleware,
+  messageRouter
 )
 export default appRouter

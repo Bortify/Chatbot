@@ -2,22 +2,14 @@ import { SendHorizonal, SmilePlus } from 'lucide-react'
 import React, { useRef } from 'react'
 import { Socket } from 'socket.io-client'
 
-import { ChatProps } from '../../hooks/useBot'
-
 export default function Input({
   socket,
-  util,
   isServerIdle,
 }: {
   socket?: Socket
-  util: {
-    chat: ChatProps[]
-    setChat: React.Dispatch<React.SetStateAction<ChatProps[]>>
-  }
   isServerIdle: boolean
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { chat, setChat } = util
 
   function sendMessage() {
     if (inputRef.current && inputRef.current.value.length > 0) {
@@ -25,12 +17,6 @@ export default function Input({
       socket?.emit('message', {
         message,
       })
-      const newChat: ChatProps = {
-        message: inputRef.current.value,
-        author: 'CLIENT',
-      }
-      const chatArr: ChatProps[] = [...chat, newChat]
-      setChat(chatArr)
       inputRef.current.value = ''
       inputRef.current.focus
     }

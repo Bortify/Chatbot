@@ -3,6 +3,7 @@ import logger from 'morgan'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 import { Server as ServerConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
@@ -14,6 +15,9 @@ const { PORT } = ServerConfig
 
 const app = Express()
 
+app.use(
+  cors()
+)
 app.use(logger('dev'))
 app.use(Express.json())
 app.use(cookieParser())

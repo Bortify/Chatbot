@@ -19,7 +19,7 @@ const getOnSocketConnection = (io) => (socket) => {
   socket.on('message', async (data) => {
     io.to(statusChannelId).emit('status', {
       status: 'PROCESSING',
-      agent: 'SERVER',
+      agent: 'MACHINE',
     })
 
     try {
@@ -33,7 +33,7 @@ const getOnSocketConnection = (io) => (socket) => {
     } finally {
       io.to(statusChannelId).emit('status', {
         status: 'IDLE',
-        agent: 'SERVER',
+        agent: 'MACHINE',
       })
     }
   })

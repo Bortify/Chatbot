@@ -2,9 +2,12 @@ import React from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { MessagesSquare, X } from 'lucide-react'
 import classNames from 'classnames'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import ChattingWindow from './container/ChattingWindow'
 import useBot from './hooks/useBot'
+import { getQueryClient } from './utils/query'
 
 interface AppProps {
   identifier: string
@@ -67,4 +70,15 @@ function App({ identifier }: AppProps) {
   )
 }
 
-export default App
+const queryClient = getQueryClient()
+
+const Wrapper = ({ identifier }: AppProps) => (
+  <QueryClientProvider client={queryClient}>
+    <App identifier={identifier} />
+    {import.meta.env.DEV && (
+      <ReactQueryDevtools initialIsOpen={false} position='bottom-left' />
+    )}
+  </QueryClientProvider>
+)
+
+export default Wrapper
