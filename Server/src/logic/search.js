@@ -6,7 +6,7 @@ export const similaritySearch = async (indexName, text) => {
   const nearestVector = await nearestSearch(
     indexName,
     embeddings.data[0].embedding,
-    1
+    3
   )
   return nearestVector.matches.reduce((prev, vector) => {
     prev = prev + ' ' + vector.metadata.context

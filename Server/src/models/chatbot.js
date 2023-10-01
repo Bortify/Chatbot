@@ -1,14 +1,15 @@
 import { prisma } from './index.js'
 
 export const createChatbot = (data) => {
+  const { indexName = null, ...remData } = data
   return prisma.chatbot.create({
     data: {
       knowledgeBase: {
         create: {
-          indexName: 'chatbot',
+          indexName: indexName || 'chatbot',
         },
       },
-      ...data,
+      ...remData,
     },
   })
 }
@@ -42,8 +43,11 @@ export const findChatbotById = (chatbotId, filter = {}) => {
       ...filter,
     },
     include: {
-      dataLake: true,
-      knowledgeBase: true,
+      knowledgeBase: {
+        include: {
+          knowledgeSource: true
+        }
+      },
     },
   })
 }

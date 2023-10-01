@@ -2,29 +2,25 @@ import { v1 as uuidV1 } from 'uuid'
 
 import { setDataInCache } from '../cache/index.js'
 import { DataStreamErrorCode } from '../constants/errorCodes.js'
-import { textEmbedder } from '../infra/embedder.js'
+import { textEmbedder } from '../logic/embedder.js'
 import { siteLoader } from '../utils/loader.js'
 import { deleteIndex, insertIndex } from '../models/pinecone.js'
 import { textSplitter } from '../utils/splitter.js'
 import eventManager from './index.js'
-import { updateDataStream } from '../models/dataStream.js'
+import { updateKnowledgeSource } from '../models/knowledgeSource.js'
 
 eventManager.on(
-  'dataStream:website:update',
-  async ({ chatbot, dataStream }) => {
-    const CACHING_KEY = `dataStream:website:update-${dataStream.id}`
-    const { id } = dataStream
+  'knowledgeSource:website:create',
+  async ({ knowledgeSource, chatbot }) => {
+    const CACHING_KEY = `knowledgeSource:website:create-${knowledgeSource.id}`
     await setDataInCache(CACHING_KEY, {
       status: 'PROCESSING',
       code: null,
     })
-    await deleteIndex(chatbot.knowledgeBase.indexName, dataStream.indexIds)
     const siteContent = await Promise.all(
-      dataStream.data.activeLinks.map((url) => siteLoader(url))
+      knowledgeSource.data.activeLinks.map((url) => siteLoader(url))
     )
-    const chunks = textSplitter(siteContent.join(' '), {
-      maximumChunkSize: 20,
-    })
+    const chunks = textSplitter(siteContent.join(' '))
     const embeddings = await Promise.all(
       chunks.map((text) => textEmbedder(text))
     )
@@ -40,9 +36,9 @@ eventManager.on(
     })
     await insertIndex(chatbot.knowledgeBase.indexName, vectoredForm)
     try {
-      await updateDataStream(
-        chatbot.id,
-        id,
+      await updateKnowledgeSource(
+        chatbot.knowledgeBase.id,
+        knowledgeSource.id,
         {
           indexIds: vectoredForm.map((d) => d.id),
         },
@@ -55,6 +51,7 @@ eventManager.on(
         code: null,
       })
     } catch (e) {
+      console.log('ERROR from CREATE knowledge Source: ',e)
       await setDataInCache(CACHING_KEY, {
         status: 'ERROR',
         code: DataStreamErrorCode.chatbotNotFound,
@@ -64,19 +61,18 @@ eventManager.on(
 )
 
 eventManager.on(
-  'dataStream:website:create',
-  async ({ dataStream, chatbot }) => {
-    const CACHING_KEY = `dataStream:website:create-${dataStream.id}`
+  'knowledgeSource:website:update',
+  async ({ chatbot, knowledgeSource }) => {
+    const CACHING_KEY = `knowledgeSource:website:update-${knowledgeSource.id}`
     await setDataInCache(CACHING_KEY, {
       status: 'PROCESSING',
       code: null,
     })
+    await deleteIndex(chatbot.knowledgeBase.indexName, knowledgeSource.indexIds)
     const siteContent = await Promise.all(
-      dataStream.data.activeLinks.map((url) => siteLoader(url))
+      knowledgeSource.data.activeLinks.map((url) => siteLoader(url))
     )
-    const chunks = textSplitter(siteContent.join(' '), {
-      maximumChunkSize: 20,
-    })
+    const chunks = textSplitter(siteContent.join(' '))
     const embeddings = await Promise.all(
       chunks.map((text) => textEmbedder(text))
     )
@@ -92,9 +88,9 @@ eventManager.on(
     })
     await insertIndex(chatbot.knowledgeBase.indexName, vectoredForm)
     try {
-      dataStream = await updateDataStream(
-        chatbot.id,
-        dataStream.id,
+      await updateKnowledgeSource(
+        chatbot.knowledgeBase.id,
+        knowledgeSource.id,
         {
           indexIds: vectoredForm.map((d) => d.id),
         },
@@ -107,6 +103,7 @@ eventManager.on(
         code: null,
       })
     } catch (e) {
+      console.log('ERROR from CREATE knowledge Source: ',e)
       await setDataInCache(CACHING_KEY, {
         status: 'ERROR',
         code: DataStreamErrorCode.chatbotNotFound,

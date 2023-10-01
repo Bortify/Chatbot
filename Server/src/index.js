@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser'
 import { Server as ServerConfig } from './config.js'
 import getOnSocketConnection from './sockets/index.js'
 import appRouter from './routes/index.js'
-import './events/dataStream.js'
+import './events/knowledgeSource.js'
 import { attachChatBotMiddleware } from './middleware/socket.js'
 
 const { PORT } = ServerConfig

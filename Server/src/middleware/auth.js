@@ -36,3 +36,15 @@ export const addUserMiddleware = async (req, res, next) => {
   req.user = user
   next()
 }
+
+export const checkForEmailVerfification = (req, res, next) => {
+  const user = req.user
+
+  if (!user.isEmailVerified) {
+    return res.status(400).json({
+      message: 'email not verified',
+    })
+  }
+
+  next()
+}

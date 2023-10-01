@@ -1,4 +1,4 @@
-import { ChatBotInfra } from '../infra/index.js'
+import { ChatBotInfra } from '../logic/index.js'
 
 const getOnSocketConnection = (io) => (socket) => {
   const { chatId } = socket.handshake.auth

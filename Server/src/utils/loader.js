@@ -8,9 +8,6 @@ export const siteLoader = async (url) => {
 }
 
 function removeEscapeSequencesSpecialCharactersAndBrackets(text) {
-  text = text.replace(/\\./g, '')
-  text = text.replace(/[^a-zA-Z0-9\s]/g, '')
-  text = text.replace(/\[.*?\]/g, '')
-  text = text.replace(/\n/g,'')
+  text = text.replace(/\\[^\s]/g, '')
   return text
 }

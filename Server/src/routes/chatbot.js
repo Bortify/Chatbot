@@ -1,19 +1,19 @@
 import { Router } from 'express'
 
 import {
-  AddDataStreamToChatbot,
+  AddKnowledgeToChatbot,
   CreateChatBot,
   UpdateChatbot,
   GetChatbotDetails,
-  UpdateDataStream,
-  GetDataStream,
+  UpdateKnowledgeSourceInChatbot,
+  GetKnowledgeSource,
   ArchiveChatbot,
-  ArchiveDataStream,
-  UpdatingDataStreamStatusProvider,
-  CreatingDataStreamStatusProvider,
+  ArchiveKnowledgeSource,
+  UpdatingKnowledgeSourceStatusProvider,
+  CreatingKnowledgeSourceStatusProvider,
 } from '../controller/chatbot.js'
 import { attachChatbotMiddleware } from '../middleware/chatbot.js'
-import { attachDataStreamMiddleware } from '../middleware/dataStream.js'
+import { attachDataStreamMiddleware } from '../middleware/knowledgeSource.js'
 
 const chatbotRouter = Router()
 
@@ -25,39 +25,39 @@ chatbotRouter.delete('/:chatbotId', attachChatbotMiddleware, ArchiveChatbot)
 chatbotRouter.post(
   '/:chatbotId/data',
   attachChatbotMiddleware,
-  AddDataStreamToChatbot
+  AddKnowledgeToChatbot
 )
 chatbotRouter.put(
-  '/:chatbotId/data/:dataStreamId',
+  '/:chatbotId/data/:knowledgeSourceId',
   attachChatbotMiddleware,
   attachDataStreamMiddleware,
-  UpdateDataStream
+  UpdateKnowledgeSourceInChatbot
 )
 chatbotRouter.get(
-  '/:chatbotId/data/:dataStreamId',
+  '/:chatbotId/data/:knowledgeSourceId',
   attachChatbotMiddleware,
   attachDataStreamMiddleware,
-  GetDataStream
+  GetKnowledgeSource
 )
 chatbotRouter.delete(
-  '/:chatbotId/data/:dataStreamId',
+  '/:chatbotId/data/:knowledgeSourceId',
   attachChatbotMiddleware,
   attachDataStreamMiddleware,
-  ArchiveDataStream
+  ArchiveKnowledgeSource
 )
 
 // status for data stream jobs.
 chatbotRouter.get(
-  '/:chatbotId/data/:dataStreamId/status/update',
+  '/:chatbotId/data/:knowledgeSourceId/status/update',
   attachChatbotMiddleware,
   attachDataStreamMiddleware,
-  UpdatingDataStreamStatusProvider
+  UpdatingKnowledgeSourceStatusProvider
 )
 chatbotRouter.get(
-  '/:chatbotId/data/:dataStreamId/status/create',
+  '/:chatbotId/data/:knowledgeSourceId/status/create',
   attachChatbotMiddleware,
   attachDataStreamMiddleware,
-  CreatingDataStreamStatusProvider
+  CreatingKnowledgeSourceStatusProvider
 )
 
 export default chatbotRouter

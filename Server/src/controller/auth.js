@@ -95,7 +95,7 @@ export const SignIn = async (req, res) => {
   const user = await findActiveUserByEmail(value.email)
 
   if (!user) {
-    res.status(404).json({
+    return res.status(404).json({
       error: `user with this email doesn't exist`,
     })
   }

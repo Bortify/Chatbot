@@ -1,12 +1,15 @@
 import Joi from 'joi'
-import { DataStreamType } from '@prisma/client'
+import { KnowledgeType } from '@prisma/client'
 
 import {
   createChatbot,
   findChatbotById,
   updateChatBot,
 } from '../models/chatbot.js'
-import { createDataStream, updateDataStream } from '../models/dataStream.js'
+import {
+  createKnowledgeSource,
+  updateKnowledgeSource,
+} from '../models/knowledgeSource.js'
 import eventManager from '../events/index.js'
 import { getDataFromCache, setDataInCache } from '../cache/index.js'
 
@@ -60,7 +63,7 @@ export const UpdateChatbot = async (req, res) => {
   return res.status(200).json(updatedChatbot)
 }
 
-export const AddDataStreamToChatbot = async (req, res) => {
+export const AddKnowledgeToChatbot = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).required(),
     hostURL: Joi.string()
@@ -78,52 +81,32 @@ export const AddDataStreamToChatbot = async (req, res) => {
       error,
     })
   }
-  const chatbot = await findChatbotById(req.chatbot.id, {
-    archived: false,
-  })
-  if (!chatbot) {
-    return res.status(404).json({
-      message: 'chatbot not found',
-    })
-  }
 
-  let dataStream = null
-  try {
-    dataStream = await createDataStream(req.chatbot.id, {
+  let knowledgeSource = await createKnowledgeSource(
+    req.chatbot.knowledgeBase.id,
+    {
       name: value.name,
       data: {
         activeLinks: value.activeLinks,
         hostURL: value.hostURL,
       },
-      type: DataStreamType.SITE,
-    })
-  } catch (e) {
-    if (e.code === 'P2002') {
-      return res.status(400).json({
-        error: 'chatbot already have a site linked to it',
-      })
-    } else {
-      return res.status(404).json({
-        error: 'chatbot not found',
-      })
+      type: KnowledgeType.SITE,
     }
-  }
+  )
 
-  eventManager.emit('dataStream:website:create', {
-    dataStream,
-    chatbot,
+  eventManager.emit('knowledgeSource:website:create', {
+    knowledgeSource,
+    chatbot: req.chatbot,
   })
 
-  return res.status(202).json({
-    message: 'request accepted',
-  })
+  return res.status(202).json(knowledgeSource)
 }
 
 export const GetChatbotDetails = async (req, res) => {
   return res.status(200).json(req.chatbot)
 }
 
-export const UpdateDataStream = async (req, res) => {
+export const UpdateKnowledgeSourceInChatbot = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).optional(),
     hostURL: Joi.string()
@@ -142,42 +125,33 @@ export const UpdateDataStream = async (req, res) => {
     })
   }
 
-  let updatedDataStream = null
-
-  try {
-    updatedDataStream = await updateDataStream(
-      req.chatbot.id,
-      req.dataStream.id,
-      {
-        name: value.name,
-        data: {
-          hostURL: value.hostURL,
-          activeLinks: value.activeLinks,
-        },
+  let updatedKnowledgeSource = await updateKnowledgeSource(
+    req.chatbot.knowledgeBase.id,
+    req.knowledgeSource.id,
+    {
+      name: value.name,
+      data: {
+        hostURL: value.hostURL,
+        activeLinks: value.activeLinks,
       },
-      {
-        archived: false,
-      }
-    )
-  } catch (e) {
-    return res.status(404).json({
-      message: 'site not found',
-    })
-  }
+    },
+    {
+      archived: false,
+    }
+  )
 
   if (value?.activeLinks) {
-    eventManager.emit('dataStream:website:update', {
+    eventManager.emit('knowledgeSource:website:update', {
       chatbot: req.chatbot,
-      dataStream: updatedDataStream
+      knowledgeSource: updatedKnowledgeSource,
     })
   }
-  return res.status(202).json({
-    message: 'request accepted',
-  })
+
+  return res.status(202).json(updateKnowledgeSource)
 }
 
-export const GetDataStream = async (req, res) => {
-  return res.status(200).json(req.dataStream)
+export const GetKnowledgeSource = async (req, res) => {
+  return res.status(200).json(req.knowledgeSource)
 }
 
 export const ArchiveChatbot = async (req, res) => {
@@ -189,26 +163,27 @@ export const ArchiveChatbot = async (req, res) => {
       message: 'chatbot not found',
     })
   }
-  return res.status(200).json(chatbot)
+  return res.status(200).json({
+    message: 'chatbot deleted',
+  })
 }
 
-export const ArchiveDataStream = async (req, res) => {
-  let updatedWebsite = null
-  try {
-    updatedWebsite = await updateDataStream(req.chatbot.id, req.dataStream.id, {
+export const ArchiveKnowledgeSource = async (req, res) => {
+  await updateKnowledgeSource(
+    req.chatbot.knowledgeBase.id,
+    req.knowledgeSource.id,
+    {
       archived: true,
-    })
-  } catch (e) {
-    return res.status(404).json({
-      message: 'data stream not found',
-    })
-  }
+    }
+  )
 
-  return res.status(200).json(updatedWebsite)
+  return res.status(200).json({
+    message: 'knowledge source deleted',
+  })
 }
 
-export const UpdatingDataStreamStatusProvider = async (req, res) => {
-  const CACHING_KEY = `dataStream:website:update-${req.dataStream.id}`
+export const UpdatingKnowledgeSourceStatusProvider = async (req, res) => {
+  const CACHING_KEY = `knowledgeSource:website:update-${req.knowledgeSource.id}`
   const dataFromCache = await getDataFromCache(CACHING_KEY)
   if (!dataFromCache) {
     return res.status(404).json({
@@ -221,8 +196,8 @@ export const UpdatingDataStreamStatusProvider = async (req, res) => {
   return res.status(200).json(dataFromCache)
 }
 
-export const CreatingDataStreamStatusProvider = async (req, res) => {
-  const CACHING_KEY = `dataStream:website:create-${req.dataStream.id}`
+export const CreatingKnowledgeSourceStatusProvider = async (req, res) => {
+  const CACHING_KEY = `knowledgeSource:website:create-${req.knowledgeSource.id}`
 
   const dataFromCache = await getDataFromCache(CACHING_KEY)
   if (!dataFromCache) {
