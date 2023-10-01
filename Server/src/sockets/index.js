@@ -7,12 +7,12 @@ const getOnSocketConnection = (io) => (socket) => {
   const userChannelId = `${chatId}-user`
   const statusChannelId = `${chatId}-status`
   const client = new ChatBotInfra({
-    indexName: chatbot.vectorStore.indexName,
+    indexName: chatbot.knowledgeBase.indexName,
     chatbot,
-    conversationId: chatId
+    conversationId: chatId,
   })
 
-  console.log('chatbot connected with name',chatId)
+  console.log('chatbot connected with name', chatId)
 
   socket.join(userChannelId)
   socket.join(statusChannelId)

@@ -19,11 +19,6 @@ export const Embeddings = {
   BATCH_SIZE: 512,
 }
 
-export const VectorStore = {
-  PRODUCT_DB_DIR: 'vectorstore/products',
-  TEXT_CONTENT_DB_DIR: 'vectorstore/text',
-}
-
 export const Indexes = {
   NAME: process.env.PINECON_INDEX_NAME || 'chatbot',
 }

@@ -18,7 +18,7 @@ eventManager.on(
       status: 'PROCESSING',
       code: null,
     })
-    await deleteIndex(chatbot.vectorStore.indexName, dataStream.indexIds)
+    await deleteIndex(chatbot.knowledgeBase.indexName, dataStream.indexIds)
     const siteContent = await Promise.all(
       dataStream.data.activeLinks.map((url) => siteLoader(url))
     )
@@ -38,7 +38,7 @@ eventManager.on(
         },
       }
     })
-    await insertIndex(chatbot.vectorStore.indexName, vectoredForm)
+    await insertIndex(chatbot.knowledgeBase.indexName, vectoredForm)
     try {
       await updateDataStream(
         chatbot.id,
@@ -90,7 +90,7 @@ eventManager.on(
         },
       }
     })
-    await insertIndex(chatbot.vectorStore.indexName, vectoredForm)
+    await insertIndex(chatbot.knowledgeBase.indexName, vectoredForm)
     try {
       dataStream = await updateDataStream(
         chatbot.id,

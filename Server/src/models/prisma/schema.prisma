@@ -50,14 +50,14 @@ model Chatbot {
   configuration  Json
   conversations  Conversation[]
   dataLake       DataStream[]
-  vectorStore    VectorStore?
+  knowledgeBase  KnowledgeBase?
   archived       Boolean        @default(false)
   active         Boolean        @default(true)
   organisationId Int
   organisation   Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model VectorStore {
+model KnowledgeBase {
   id        Int      @id @default(autoincrement())
   indexName String
   chatbotId Int      @unique
@@ -65,7 +65,7 @@ model VectorStore {
 }
 
 model Conversation {
-  id        String       @id
+  id        String    @id
   name      String    @default("Anonymous")
   chatbotId Int
   chatbot   Chatbot   @relation(fields: [chatbotId], references: [id], onDelete: Cascade, onUpdate: Cascade)
