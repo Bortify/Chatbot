@@ -35,13 +35,7 @@ export default function useBot({ identifier }: { identifier: string }) {
   )
 
   useEffect(() => {
-    const socketInit = createSocket(BACKEND_URL, {
-      chatId: chatId,
-      identifier,
-    })
-    socketInit.connect()
-    setSocket(socketInit)
-    socketInit.on('message', (data: MessageEventProp) => {
+    socket?.on('message', (data: MessageEventProp) => {
       const recievedMessage: ChatProp = {
         content: data.message,
         author: 'MACHINE',
@@ -50,10 +44,22 @@ export default function useBot({ identifier }: { identifier: string }) {
       }
       setChat([...chat, recievedMessage])
     })
-    socketInit.on('connect', () => {
+    socket?.on('connect', () => {
       setChatbotEnabled(true)
     })
-  }, [isServerIdle, chat, identifier, chatId])
+  }, [isServerIdle, chat, identifier, chatId,socket])
+
+  useEffect(() => {
+    const socketInit = createSocket(BACKEND_URL, {
+      chatId: chatId,
+      identifier,
+    })
+    socketInit.connect()
+    setSocket(socketInit)
+    return ()=>{
+      socketInit.disconnect()
+    }
+  }, [identifier, chatId])
 
   useEffect(() => {
     socket?.on('status', (data: StatusEventProps) => {

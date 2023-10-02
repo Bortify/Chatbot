@@ -17,6 +17,5 @@ export function createSocket(
     },
     autoConnect: false,
   })
-
   return socketInit
 }

@@ -1,4 +1,4 @@
-import { ChatBotInfra } from '../logic/index.js'
+import { Chatbot } from '../logic/index.js'
 
 const getOnSocketConnection = (io) => (socket) => {
   const { chatId } = socket.handshake.auth
@@ -6,7 +6,7 @@ const getOnSocketConnection = (io) => (socket) => {
 
   const userChannelId = `${chatId}-user`
   const statusChannelId = `${chatId}-status`
-  const client = new ChatBotInfra({
+  const client = new Chatbot({
     indexName: chatbot.knowledgeBase.indexName,
     chatbot,
     conversationId: chatId,
@@ -16,6 +16,7 @@ const getOnSocketConnection = (io) => (socket) => {
 
   socket.join(userChannelId)
   socket.join(statusChannelId)
+  
   socket.on('message', async (data) => {
     io.to(statusChannelId).emit('status', {
       status: 'PROCESSING',
@@ -38,7 +39,7 @@ const getOnSocketConnection = (io) => (socket) => {
     }
   })
 
-  socket.on('disconnect',async ()=>{
+  socket.on('disconnect', async () => {
     await client.cleanup()
     console.log('disconnected')
   })

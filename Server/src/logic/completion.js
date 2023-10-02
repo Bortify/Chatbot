@@ -4,7 +4,7 @@ import OpenAI from './llm.js'
 import getPromptTemplate from './prompts/index.js'
 
 export const getChatResponses = async (
-  conversationId,
+  identifier,
   previousMessages,
   inputVariableObject
 ) => {
@@ -30,7 +30,7 @@ export const getChatResponses = async (
     messages,
     model: 'gpt-3.5-turbo',
     max_tokens: 500,
-    user: conversationId,
+    user: identifier,
   })
   return {
     completion: res.choices[0].message.content,
@@ -38,7 +38,8 @@ export const getChatResponses = async (
   }
 }
 
-export const getSummary = async (conversationId, messages) => {
+export const getSummary = async (identifier, messages) => {
+  console.log('messages with no summary',messages)
   const summaryPrompt = await getPromptTemplate('chatbot:summary')
   const res = await OpenAI.chat.completions.create({
     messages: [
@@ -53,7 +54,32 @@ export const getSummary = async (conversationId, messages) => {
     ],
     model: 'gpt-3.5-turbo',
     max_tokens: 500,
-    user: conversationId,
+    user: identifier,
+  })
+  return {
+    completion: res.choices[0].message.content,
+    tokens: res.usage.total_tokens,
+  }
+}
+
+export const mergeSummary = async ({ prevSummary, currentSummary }) => {
+  console.log({
+    currentSummary,
+    prevSummary
+  })
+  const mergeSummaryTemplate = await getPromptTemplate('chatbot:summary:merge')
+  const res = await OpenAI.chat.completions.create({
+    messages: [
+      {
+        role: 'user',
+        content: mergeSummaryTemplate({
+          oldSummary: prevSummary,
+          newSummary: currentSummary,
+        }),
+      },
+    ],
+    model: 'gpt-3.5-turbo',
+    max_tokens: 500,
   })
   return {
     completion: res.choices[0].message.content,

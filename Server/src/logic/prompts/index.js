@@ -1,4 +1,9 @@
-import { chatbotResponse, chatbotResponseWithHistory, personality, summary } from './chatbot.js'
+import {
+  chatbotResponse,
+  chatbotResponseWithHistory,
+  personality,
+} from './chatbot.js'
+import { mergeSummary, summary } from './summary.js'
 
 const defaultPromptTemplateMap = {
   'chatbot:response': {
@@ -13,10 +18,14 @@ const defaultPromptTemplateMap = {
     template: summary,
     inputVariables: [],
   },
-  'chatbot:personality':{
+  'chatbot:personality': {
     template: personality,
-    inputVariables: null
-  }
+    inputVariables: null,
+  },
+  'chatbot:summary:merge': {
+    template: mergeSummary,
+    inputVariables: ['oldSummary', 'newSummary'],
+  },
 }
 
 export default async function getPromptTemplate(templateName, chatbotId) {

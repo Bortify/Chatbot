@@ -54,7 +54,7 @@ model Chatbot {
   active         Boolean        @default(true)
   organisationId Int
   organisation   Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tokens         Int         @default(0)
+  tokens         Int            @default(0)
 }
 
 model KnowledgeBase {
@@ -75,12 +75,13 @@ model Conversation {
 }
 
 model Message {
-  id             Int          @id @default(autoincrement())
-  content        String
-  timestamp      DateTime     @default(now())
-  author         AuthorType
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id               Int          @id @default(autoincrement())
+  content          String
+  timestamp        DateTime     @default(now())
+  author           AuthorType
+  conversationId   String
+  conversation     Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  summaryGenerated Boolean      @default(false)
 }
 
 model KnowledgeSource {

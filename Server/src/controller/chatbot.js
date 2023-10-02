@@ -16,7 +16,11 @@ import { getDataFromCache, setDataInCache } from '../cache/index.js'
 export const CreateChatBot = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).required(),
-    configuration: Joi.object().default({}),
+    configuration: Joi.object().default(
+      Joi.object({
+        errorText: Joi.string().default(`I can't assist you with that`),
+      })
+    ),
   })
 
   const { value, error } = schema.validate(req.body)

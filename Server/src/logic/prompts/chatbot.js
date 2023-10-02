@@ -17,15 +17,8 @@ export const chatbotResponseWithHistory = (inputVariableObject) => {
   const inputVariables = ['context', 'query', 'errorText', 'history']
   return createTextFromTemplate(template, inputVariables, inputVariableObject)
 }
-
-export const summary = () => {
-    const template = `
-              Generate a summary of our conversation in about 100 words.
-            `
-    return template
-  }
   
-export const personality = (inputVariableObject)=>{
+export const personality = ()=>{
     const template = `
             You are a friendly chatbot. User has some queries. Answer them politely.
             Responses generated should be short and to the point. Use Markdown for answering.`

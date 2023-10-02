@@ -1,16 +1,18 @@
 import { AuthorType } from '@prisma/client'
 
 import { similaritySearch } from './search.js'
-import { getChatResponses, getSummary } from './completion.js'
+import { getChatResponses, getSummary, mergeSummary } from './completion.js'
 import {
   appendMessageToConveration,
   createOrGetConversation,
   getMessages,
+  updateMessage,
   updateSummary,
 } from '../models/conversation.js'
 import { updateChatBot } from '../models/chatbot.js'
+import { prisma } from '../models/index.js'
 
-export class ChatBotInfra {
+export class Chatbot {
   #init = async ({ indexName, chatbot, conversationId }) => {
     this.conversation = await createOrGetConversation(
       conversationId,
@@ -32,11 +34,6 @@ export class ChatBotInfra {
   }
 
   predict = async (query) => {
-    await appendMessageToConveration(
-      this.conversation.id,
-      query,
-      AuthorType.USER
-    )
     const context = await similaritySearch(this.indexName, query)
     this.messages.push({
       author: AuthorType.USER,
@@ -45,29 +42,46 @@ export class ChatBotInfra {
     const result = await getChatResponses(this.conversation.id, this.messages, {
       context,
       query,
-      errorText: `I can't assist you with that`,
+      errorText: this.chatbot.configuration.errorText,
     })
     this.messages.push({
       author: AuthorType.MACHINE,
       content: result.completion,
     })
-    await appendMessageToConveration(
-      this.conversation.id,
-      result.completion,
-      AuthorType.MACHINE
-    )
+    await prisma.$transaction([
+      appendMessageToConveration(this.conversation.id, query, AuthorType.USER),
+      appendMessageToConveration(
+        this.conversation.id,
+        result.completion,
+        AuthorType.MACHINE
+      ),
+    ])
     this.tokens += result.tokens
     return result.completion
   }
 
   #generateSummary = async () => {
-    if (this.messages.length === 0) return null
-    const { completion: summary, tokens } = await getSummary(
-      this.conversation.id,
-      this.messages
-    )
-    this.tokens += tokens
-    await updateSummary(this.conversation.id, this.chatbot.id, summary)
+    const messages = await getMessages(this.conversation.id, {
+      summaryGenerated: false,
+    })
+    if (messages.length === 0 || this.messages.length === 0) return null
+    const { completion: newSummary, tokens: newSummaryTokens } =
+      await getSummary(this.conversation.id, messages)
+    this.tokens += newSummaryTokens
+    const { completion: summary, tokens: mergedSummaryTokens } =
+      await mergeSummary({
+        prevSummary: this.conversation.summary,
+        currentSummary: newSummary,
+      })
+    this.tokens += mergedSummaryTokens
+    await prisma.$transaction([
+      updateSummary(this.conversation.id, this.chatbot.id, summary),
+      ...messages.map(({ id }) =>
+        updateMessage(id, {
+          summaryGenerated: true,
+        })
+      ),
+    ])
   }
 
   #saveTokens = async () => {
