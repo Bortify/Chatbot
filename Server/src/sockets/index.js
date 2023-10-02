@@ -37,6 +37,11 @@ const getOnSocketConnection = (io) => (socket) => {
       })
     }
   })
+
+  socket.on('disconnect',async ()=>{
+    await client.cleanup()
+    console.log('disconnected')
+  })
 }
 
 export default getOnSocketConnection

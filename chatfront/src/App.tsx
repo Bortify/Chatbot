@@ -14,7 +14,7 @@ interface AppProps {
 }
 
 function App({ identifier }: AppProps) {
-  const { socket, chat, setChat, isServerIdle, chatbotEnabled } = useBot({
+  const { loading, chat, sendMessage, isServerIdle, chatbotEnabled } = useBot({
     identifier,
   })
 
@@ -55,9 +55,9 @@ function App({ identifier }: AppProps) {
                 leaveTo='opacity-0 translate-y-5'>
                 <Popover.Panel className='fixed right-10 bottom-32'>
                   <ChattingWindow
-                    socket={socket}
+                    loading={loading}
                     chat={chat}
-                    setChat={setChat}
+                    sendMessage={sendMessage}
                     isServerIdle={isServerIdle}
                   />
                 </Popover.Panel>

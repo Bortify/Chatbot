@@ -1,22 +1,19 @@
 import { SendHorizonal, SmilePlus } from 'lucide-react'
 import React, { useRef } from 'react'
-import { Socket } from 'socket.io-client'
 
 export default function Input({
-  socket,
   isServerIdle,
+  sendMessage,
 }: {
-  socket?: Socket
   isServerIdle: boolean
+  sendMessage: (message: string) => void
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
 
-  function sendMessage() {
+  function sendMessageHandler() {
     if (inputRef.current && inputRef.current.value.length > 0) {
       const message = inputRef.current.value
-      socket?.emit('message', {
-        message,
-      })
+      sendMessage(message)
       inputRef.current.value = ''
       inputRef.current.focus
     }
@@ -25,7 +22,7 @@ export default function Input({
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
       event.preventDefault()
-      sendMessage()
+      sendMessageHandler()
     }
   }
 

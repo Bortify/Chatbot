@@ -8,11 +8,15 @@ import { BACKEND_URL } from '../config'
 import { useQuery } from '@tanstack/react-query'
 import { getMessages } from '../api/messages'
 
-export interface ChatProps {
+export interface ChatProp {
   content: string
   author: 'MACHINE' | 'USER'
   timestamp: Date
   id: number
+}
+
+interface MessageEventProp {
+  message: string
 }
 
 interface StatusEventProps {
@@ -23,7 +27,7 @@ interface StatusEventProps {
 export default function useBot({ identifier }: { identifier: string }) {
   const chatId = getOrCreateChatId()
   const [socket, setSocket] = useState<Socket>()
-  const [chat, setChat] = useState<ChatProps[]>([])
+  const [chat, setChat] = useState<ChatProp[]>([])
   const [isServerIdle, setIsServerIdle] = useState<boolean>(true)
   const [chatbotEnabled, setChatbotEnabled] = useState<boolean>(false)
   const messageQuery = useQuery(['messages', chatId], (key) =>
@@ -37,8 +41,14 @@ export default function useBot({ identifier }: { identifier: string }) {
     })
     socketInit.connect()
     setSocket(socketInit)
-    socketInit.on('message', () => {
-      // invalidate chats
+    socketInit.on('message', (data: MessageEventProp) => {
+      const recievedMessage: ChatProp = {
+        content: data.message,
+        author: 'MACHINE',
+        timestamp: new Date(),
+        id: Math.random() * 10000000,
+      }
+      setChat([...chat, recievedMessage])
     })
     socketInit.on('connect', () => {
       setChatbotEnabled(true)
@@ -56,12 +66,31 @@ export default function useBot({ identifier }: { identifier: string }) {
     })
   }, [isServerIdle, socket])
 
+  useEffect(() => {
+    if (messageQuery.data?.data) {
+      setChat(messageQuery.data.data)
+    }
+  }, [messageQuery.data])
+
+  function sendMessage(message: string): void {
+    socket?.emit('message', {
+      message,
+    })
+    const newChat: ChatProp = {
+      content: message,
+      author: 'USER',
+      timestamp: new Date(),
+      id: Math.random() * 100000,
+    }
+    setChat([...chat, newChat])
+  }
+
   return {
-    socket,
-    chat: messageQuery.data?.data || [],
-    setChat,
+    loading: messageQuery.isLoading,
+    chat,
     isServerIdle,
     chatbotEnabled,
+    sendMessage,
   }
 }
 

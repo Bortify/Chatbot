@@ -1,16 +1,18 @@
 import classNames from 'classnames'
 import { useEffect, useRef } from 'react'
 
-import { ChatProps } from '../../hooks/useBot'
+import { ChatProp } from '../../hooks/useBot'
 import ChatPlaceholder from './components/Placeholder'
 import { formatDate } from '../../utils/date'
+import Spinner from '../Spinner'
 
 interface BodyProps {
-  chat: ChatProps[]
+  chat: ChatProp[]
   isServerIdle: boolean
+  loading: boolean
 }
 
-export default function Body({ chat, isServerIdle }: BodyProps) {
+export default function Body({ chat, isServerIdle, loading }: BodyProps) {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -21,6 +23,14 @@ export default function Body({ chat, isServerIdle }: BodyProps) {
       })
     }
   }, [chat])
+
+  if (loading) {
+    return (
+      <div className='flex items-center justify-center flex-1'>
+        <Spinner className='text-primary fill-[#FEFEFE] w-8 h-8' />
+      </div>
+    )
+  }
 
   return (
     <div
@@ -37,7 +47,6 @@ export default function Body({ chat, isServerIdle }: BodyProps) {
         )
       })}
       {isServerIdle == false && <ChatPlaceholder />}
-      {/* <div className='w-full h-20'/> */}
     </div>
   )
 }

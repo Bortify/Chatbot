@@ -54,13 +54,14 @@ model Chatbot {
   active         Boolean        @default(true)
   organisationId Int
   organisation   Organisation   @relation(fields: [organisationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tokens         Int         @default(0)
 }
 
 model KnowledgeBase {
-  id        Int      @id @default(autoincrement())
-  indexName String
-  chatbotId Int      @unique
-  chatbot   Chatbot? @relation(fields: [chatbotId], references: [id])
+  id              Int               @id @default(autoincrement())
+  indexName       String
+  chatbotId       Int               @unique
+  chatbot         Chatbot?          @relation(fields: [chatbotId], references: [id])
   knowledgeSource KnowledgeSource[]
 }
 
@@ -83,12 +84,12 @@ model Message {
 }
 
 model KnowledgeSource {
-  id        Int           @id @default(autoincrement())
-  name      String
-  data      Json
+  id              Int            @id @default(autoincrement())
+  name            String
+  data            Json
   knowledgeBaseId Int
-  knowledgeBase   KnowledgeBase?      @relation(fields: [knowledgeBaseId], references: [id])
-  archived  Boolean       @default(false)
-  type      KnowledgeType
-  indexIds  String[]
+  knowledgeBase   KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
+  archived        Boolean        @default(false)
+  type            KnowledgeType
+  indexIds        String[]
 }
