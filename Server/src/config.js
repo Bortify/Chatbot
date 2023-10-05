@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 config()
 
 export const Server = {
-  PORT: process.env.PORT || 8080,
+  PORT: 8080,
 }
 
 export const OpenAI = {
