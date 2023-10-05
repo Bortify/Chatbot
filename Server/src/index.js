@@ -33,7 +33,7 @@ app.get('/',(req,res)=>{
 
 setInterval(async ()=>{
   await fetch(BACKEND_URL)
-},10000)
+},1000 * 60 * 5) // will do self ping after each 5 min
 
 const server = createServer(app)
 const io = new Server(server, {
