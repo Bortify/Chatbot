@@ -21,7 +21,7 @@ function App({ identifier }: AppProps) {
   return (
     chatbotEnabled && (
       <>
-        <Popover className='fixed right-10 bottom-8 z-[9999]'>
+        <Popover className={`fixed right-10 bottom-8 z-[9999]`}>
           {({ open }) => (
             <>
               <Popover.Button className={'outline-none border-none'}>

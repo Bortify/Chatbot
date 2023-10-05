@@ -8,6 +8,7 @@ const ChatFront = r2wc(App, React, ReactDOM, {
   props: {
     identifier: 'string',
   },
+  shadow: 'open',
 })
 
 export default ChatFront
