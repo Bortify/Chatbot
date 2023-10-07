@@ -4,7 +4,7 @@ import React, { useRef } from 'react'
 export default function Input({
   isServerIdle,
   sendMessage,
-}: {
+}:{
   isServerIdle: boolean
   sendMessage: (message: string) => void
 }) {

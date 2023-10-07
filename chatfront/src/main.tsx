@@ -1,21 +1,21 @@
-// import ChatFront from './WebComponent'
-import './index.css'
-
-// customElements.define('chat-front',ChatFront)
-
 import install from '@twind/with-web-components'
+import ReactDOM from 'react-dom/client'
+
 import config from './twind.config'
+import App from './App'
 
 const withTwind = install(config)
 
-class TwindElement extends withTwind(HTMLElement) {
+class ChatFront extends withTwind(HTMLElement) {
   constructor() {
     super()
-
-    const shadow = this.attachShadow({ mode: 'open' })
-    
-    shadow.innerHTML = `<h1 class="text-3xl font-bold underline">Hello world!</h1>`
+    const shadow: ShadowRoot = this.attachShadow({ mode: 'open' })
+    const mountPoint: HTMLDivElement = document.createElement('div')
+    shadow.appendChild(mountPoint)
+    const key = this.getAttribute('key') || ''
+    const root = ReactDOM.createRoot(mountPoint)
+    root.render(<App identifier={key}/>)
   }
 }
 
-customElements.define('twind-element', TwindElement,)
+customElements.define('chat-front', ChatFront)

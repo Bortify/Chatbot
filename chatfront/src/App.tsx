@@ -4,6 +4,7 @@ import { MessagesSquare, X } from 'lucide-react'
 import classNames from 'classnames'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { tw } from 'twind'
 
 import ChattingWindow from './container/ChattingWindow'
 import useBot from './hooks/useBot'
@@ -13,7 +14,7 @@ interface AppProps {
   identifier: string
 }
 
-function App({ identifier }: AppProps) {
+function App({ identifier = '' }: AppProps) {
   const { loading, chat, sendMessage, isServerIdle, chatbotEnabled } = useBot({
     identifier,
   })
@@ -21,26 +22,23 @@ function App({ identifier }: AppProps) {
   return (
     chatbotEnabled && (
       <>
-        <Popover className={`fixed right-10 bottom-8 z-[9999]`}>
+        <Popover className={tw`fixed right-10 bottom-8 z-[9999]`}>
           {({ open }) => (
             <>
-              <Popover.Button className={'outline-none border-none'}>
-                <span className='relative block w-16 h-16 rounded-full shadow-lg bg-primary'>
+              <Popover.Button className={tw`border-none outline-none`}>
+                <span
+                  className={tw`relative block w-16 h-16 rounded-full shadow-lg bg-primary`}>
                   <MessagesSquare
                     className={classNames(
-                      'w-7 h-7 text-white scale-100 ease-in-out duration-300 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2',
-                      {
-                        'scale-50 opacity-0': open,
-                      }
+                      tw`w-7 h-7 text-white scale-100 ease-in-out duration-300 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2'`,
+                      open && tw`scale-50 opacity-0`
                     )}
                   />
                   <X
                     strokeWidth={3}
                     className={classNames(
-                      'w-7 h-7 text-white ease-in-out duration-300 scale-50 opacity-0 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2',
-                      {
-                        'scale-100 opacity-100': open,
-                      }
+                      tw`absolute text-white duration-300 ease-in-out scale-50 -translate-x-1/2 -translate-y-1/2 opacity-0 w-7 h-7 top-1/2 left-1/2`,
+                      tw`scale-100 opacity-100`
                     )}
                   />
                 </span>

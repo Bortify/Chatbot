@@ -3,7 +3,7 @@ import { AuthorType } from '@prisma/client'
 import { similaritySearch } from './search.js'
 import { getChatResponses, getSummary, mergeSummary } from './completion.js'
 import {
-  appendMessageToConveration,
+  appendMessageToConversation,
   createOrGetConversation,
   getMessages,
   updateMessage,
@@ -49,8 +49,8 @@ export class Chatbot {
       content: result.completion,
     })
     await prisma.$transaction([
-      appendMessageToConveration(this.conversation.id, query, AuthorType.USER),
-      appendMessageToConveration(
+      appendMessageToConversation(this.conversation.id, query, AuthorType.USER),
+      appendMessageToConversation(
         this.conversation.id,
         result.completion,
         AuthorType.MACHINE

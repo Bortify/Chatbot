@@ -13,7 +13,7 @@ export const createOrGetConversation = (conversationId, chatbotId) =>
     update: {},
   })
 
-export const appendMessageToConveration = (conversationId, message, author) =>
+export const appendMessageToConversation = (conversationId, message, author) =>
   prisma.message.create({
     data: {
       content: message,
