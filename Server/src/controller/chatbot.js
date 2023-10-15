@@ -1,26 +1,22 @@
 import Joi from 'joi'
 import { KnowledgeType } from '@prisma/client'
 
-import {
-  createChatbot,
-  findChatbotById,
-  updateChatBot,
-} from '../models/chatbot.js'
+import { createChatbot, updateChatBot } from '../models/chatbot.js'
 import {
   createKnowledgeSource,
   updateKnowledgeSource,
 } from '../models/knowledgeSource.js'
 import eventManager from '../events/index.js'
-import { getDataFromCache, setDataInCache } from '../cache/index.js'
+import { getDataFromCache } from '../cache/index.js'
 
 export const CreateChatBot = async (req, res) => {
   const schema = Joi.object({
     name: Joi.string().min(1).max(200).required(),
-    configuration: Joi.object().default(
-      Joi.object({
-        errorText: Joi.string().default(`I can't assist you with that`),
-      })
-    ),
+    configuration: Joi.object({
+      errorText: Joi.string().default("I can't assist with you that"),
+    })
+      .optional()
+      .default({}),
   })
 
   const { value, error } = schema.validate(req.body)
@@ -29,13 +25,11 @@ export const CreateChatBot = async (req, res) => {
       error,
     })
   }
-  const chatBot = await createChatbot({
+  const chatbot = await createChatbot({
     ...value,
     organisationId: req.organisation.id,
   })
-  return res.status(200).json({
-    ...chatBot,
-  })
+  return res.status(200).json(chatbot)
 }
 
 export const UpdateChatbot = async (req, res) => {

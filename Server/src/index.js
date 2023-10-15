@@ -24,17 +24,6 @@ app.use(Express.json())
 app.use(cookieParser())
 app.use(appRouter)
 
-// Self pinging for render only.
-app.get('/',(req,res)=>{
-  return res.json({
-    message: 'ok'
-  })
-})
-
-setInterval(async ()=>{
-  await fetch(BACKEND_URL)
-},1000 * 10) // will do self ping after each 10 sec
-
 const server = createServer(app)
 const io = new Server(server, {
   cors: {
