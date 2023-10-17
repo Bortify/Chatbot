@@ -63,6 +63,7 @@ const SignUpForm: React.FC<{}> = () => {
       />
       <Form.Field.Input
         label={`What's your name?`}
+        className='mt-2'
         placeholder='John Duo'
         {...register('name', {
           required: 'Name is required.',
