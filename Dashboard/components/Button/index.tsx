@@ -2,15 +2,18 @@ import classNames from 'classnames'
 import Link from 'next/link'
 import { DetailedHTMLProps } from 'react'
 
+import Spinner from '../Spinner'
+
 type ButtonProps = {
-  color: 'primary' | 'secondary' | 'neutral' | 'accent' | 'ghost' | 'none'
-  state: 'success' | 'error' | 'warning' | 'info' | 'none'
-  size: 'large' | 'medium' | 'small' | 'extra-small'
+  color?: 'primary' | 'secondary' | 'neutral' | 'accent' | 'ghost' | 'none'
+  state?: 'success' | 'error' | 'warning' | 'info' | 'none'
+  size?: 'large' | 'medium' | 'small' | 'extra-small'
   type?: 'outline' | 'solid'
   wide?: boolean
   href?: string
   outerLink?: boolean
   block?: boolean
+  loading?: boolean
 }
 
 const Button: React.FC<
@@ -21,7 +24,7 @@ const Button: React.FC<
     >
 > = ({
   children,
-  color,
+  color='primary',
   size = 'medium',
   type = 'solid',
   state = 'none',
@@ -30,14 +33,16 @@ const Button: React.FC<
   outerLink,
   block,
   className,
+  loading=false,
   ...restProps
 }) => {
   const Tag: any = href ? Link : 'button'
   return (
     <Tag
       href={href}
+      disabled={loading}
       target={outerLink && '_blank'}
-      className={classNames(
+      className={classNames('relative overflow-hidden',
         ColorBtnMap[color],
         StateBtnMap[state],
         BtnSizeMap[size],
@@ -45,12 +50,16 @@ const Button: React.FC<
           'btn-outline': type === 'outline',
           'btn-wide': wide,
           'btn-block': block,
-          'btn': !href
+          'btn': !href,
+          'opacity-50 cursor-not-allowed': loading
         },
         className
       )}
       {...restProps}>
       {children}
+        <div className={classNames('absolute top-0 left-0 grid w-full h-full place-items-center cursor-not-allowed',ColorBtnMap[color])}>
+          <Spinner/>
+        </div>
     </Tag>
   )
 }

@@ -55,7 +55,7 @@ const InputField = forwardRef<
             disabled={disabled}
             type={type === 'password' ? (showPass ? 'text' : 'password') : type}
             ref={_ref}
-            className='w-full h-full'
+            className='w-full h-full autofill:bg-none bg-none'
           />
           {type === 'password' && (
             <PasswordVisibilityToggler
