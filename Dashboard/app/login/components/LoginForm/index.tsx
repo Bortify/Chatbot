@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { signIn } from 'next-auth/react'
 
 import Button from '@/components/Button'
 import Form from '@/components/Form'
@@ -23,6 +25,7 @@ const validationSchema = z.object({
 type ValidationSchema = z.infer<typeof validationSchema>
 
 const LoginForm: React.FC<{}> = () => {
+  const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -31,7 +34,21 @@ const LoginForm: React.FC<{}> = () => {
     resolver: zodResolver(validationSchema),
   })
 
-  const onSubmit: SubmitHandler<ValidationSchema> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<ValidationSchema> = async (data) => {
+    setLoading(true)
+    try {
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false
+      })
+      console.log('result after login is', result)
+    } catch (e) {
+      console.log('error is', e)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -55,7 +72,13 @@ const LoginForm: React.FC<{}> = () => {
         autoComplete='current-password'
         error={errors.password?.message}
       />
-      <Button size='medium' color='primary' state='none' block className='mt-6'>
+      <Button
+        size='medium'
+        color='primary'
+        state='none'
+        block
+        className='mt-6'
+        loading={loading}>
         Login
       </Button>
       <div className='flex items-center justify-center gap-2 mt-4'>

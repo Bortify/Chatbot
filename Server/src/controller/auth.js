@@ -122,10 +122,13 @@ export const SignIn = async (req, res) => {
   })
 
   return res.status(200).json({
-    name: user.name,
-    email: user.email,
-    phone: user?.phone || null,
-    isEmailVerified: user.isEmailVerified,
+    user: {
+      name: user.name,
+      email: user.email,
+      phone: user?.phone || null,
+      isEmailVerified: user.isEmailVerified,
+    },
+    token
   })
 }
 
