@@ -24,7 +24,7 @@ const Button: React.FC<
     >
 > = ({
   children,
-  color='primary',
+  color = 'primary',
   size = 'medium',
   type = 'solid',
   state = 'none',
@@ -33,7 +33,7 @@ const Button: React.FC<
   outerLink,
   block,
   className,
-  loading=false,
+  loading = false,
   ...restProps
 }) => {
   const Tag: any = href ? Link : 'button'
@@ -42,7 +42,8 @@ const Button: React.FC<
       href={href}
       disabled={loading}
       target={outerLink && '_blank'}
-      className={classNames('relative overflow-hidden',
+      className={classNames(
+        'relative overflow-hidden',
         ColorBtnMap[color],
         StateBtnMap[state],
         BtnSizeMap[size],
@@ -50,16 +51,23 @@ const Button: React.FC<
           'btn-outline': type === 'outline',
           'btn-wide': wide,
           'btn-block': block,
-          'btn': !href,
-          'opacity-50 cursor-not-allowed': loading
+          btn: !href,
+          'opacity-50 cursor-not-allowed': loading,
         },
         className
       )}
       {...restProps}>
       {children}
-        <div className={classNames('absolute top-0 left-0 grid w-full h-full place-items-center cursor-not-allowed',ColorBtnMap[color])}>
-          <Spinner/>
-        </div>
+      <div
+        className={classNames(
+          'absolute top-0 left-0 grid w-full h-full place-items-center cursor-not-allowed',
+          ColorBtnMap[color],
+          {
+            hidden: !loading,
+          }
+        )}>
+        <Spinner />
+      </div>
     </Tag>
   )
 }

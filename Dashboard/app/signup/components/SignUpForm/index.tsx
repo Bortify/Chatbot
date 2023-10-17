@@ -93,7 +93,7 @@ const SignUpForm: React.FC<{}> = () => {
         error={errors.confirmPassword?.message}
       />
       <Button size='medium' color='primary' state='none' block className='mt-6'>
-        SignUp
+        Sign Up
       </Button>
       <div className='flex items-center justify-center gap-2 mt-4'>
         <Typography.Content size='sm'>{'Got an Account? '}</Typography.Content>
