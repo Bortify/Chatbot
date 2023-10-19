@@ -1,9 +1,9 @@
-import { Router } from "express";
+import { Router } from 'express'
 
-import { GetAllMessages } from "../controller/messages.js";
+import { GetAllMessages } from '../controller/messages.js'
 
 const messageRouter = Router()
 
-messageRouter.get('/messages',GetAllMessages)
+messageRouter.get('/messages', GetAllMessages)
 
 export default messageRouter

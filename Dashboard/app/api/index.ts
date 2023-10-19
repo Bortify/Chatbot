@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { authOptions } from '@/lib/auth'
 import { BACKEND_BASE_URL } from '@/constants/url'
-
-console.log('backedn url is', BACKEND_BASE_URL)
+import { APIError } from '@/lib/error'
 
 type BaseConfigType = {
   external?: Boolean
@@ -38,10 +37,10 @@ export default async function serverApi(
 
 async function getBaseConfig({ external = false }: BaseConfigType) {
   let authToken = null
-  const session: Session & { token: string } | null = await getServerSession(
+  const session: (Session & { token: string }) | null = await getServerSession(
     authOptions
   )
-  authToken = session?.user?.token
+  authToken = session?.token
   return {
     headers: {
       ...(authToken && !external
@@ -78,13 +77,11 @@ async function handleResponse(response: Response, options: RequestOptionsType) {
     const isOk = response.ok
     if (!isOk) {
       const error = data || response
-      console.log('RESPONSE IS NOT OK FROM SERVER: ', error)
-      if (useNextResponse) {
-        return NextResponse.json(error, {
-          status: response.status,
-        })
-      }
-      return Promise.reject(error)
+      throw new APIError({
+        message: error.errors[0].message,
+        status: response.status,
+        path: error.errors[0].path
+      })
     }
 
     if (revalidate) {

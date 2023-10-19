@@ -16,9 +16,7 @@ const { PORT } = ServerConfig
 
 const app = Express()
 
-app.use(
-  cors()
-)
+app.use(cors())
 app.use(logger('dev'))
 app.use(Express.json())
 app.use(cookieParser())
@@ -26,10 +24,10 @@ app.use(appRouter)
 
 const server = createServer(app)
 const io = new Server(server, {
-  cors: {
-    origin: '*',
-    methods: '*',
-  },
+    cors: {
+        origin: '*',
+        methods: '*',
+    },
 })
 
 io.use(attachChatBotMiddleware)

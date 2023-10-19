@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import {
-  CreateAccount,
-  SignIn,
-  GetProfile,
-  SendResetPasswordRequest,
-  HandlePasswordResetRequest,
-  SendEmailVerifyingRequest,
-  HandleEmailVerifyingRequest,
-  UpdateProfile,
-  ArchiveUser,
+    CreateAccount,
+    SignIn,
+    GetProfile,
+    SendResetPasswordRequest,
+    HandlePasswordResetRequest,
+    SendEmailVerifyingRequest,
+    HandleEmailVerifyingRequest,
+    UpdateProfile,
+    ArchiveUser,
 } from '../controller/auth.js'
 import { addUserMiddleware } from '../middleware/auth.js'
 

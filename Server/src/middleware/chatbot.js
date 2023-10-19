@@ -1,27 +1,27 @@
 import { findChatbotById } from '../models/chatbot.js'
 
 export const attachChatbotMiddleware = async (req, res, next) => {
-  let chatbotId = null
-  
-  try {
-    chatbotId = parseInt(req.params.chatbotId)
-  } catch (e) {
-    return res.status(400).json({
-      error: 'invalid chat id',
+    let chatbotId = null
+
+    try {
+        chatbotId = parseInt(req.params.chatbotId)
+    } catch (e) {
+        return res.status(400).json({
+            error: 'invalid chat id',
+        })
+    }
+
+    const chatbot = await findChatbotById(chatbotId, {
+        organisationId: req.organisation.id,
+        archived: false,
     })
-  }
 
-  const chatbot = await findChatbotById(chatbotId, {
-    organisationId: req.organisation.id,
-    archived: false
-  })
+    if (!chatbot) {
+        return res.status(404).json({
+            error: 'chatbot not found',
+        })
+    }
 
-  if (!chatbot) {
-    return res.status(404).json({
-      error: 'chatbot not found',
-    })
-  }
-
-  req.chatbot = chatbot
-  next()
+    req.chatbot = chatbot
+    next()
 }

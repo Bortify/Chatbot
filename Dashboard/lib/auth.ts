@@ -1,6 +1,10 @@
-import { login } from '@/app/api/auth'
-import { AuthOptions } from 'next-auth'
+import { AuthOptions, Session } from 'next-auth'
+import { JWT } from 'next-auth/jwt'
+import { AdapterUser } from 'next-auth/adapters'
 import CredentialsProvider from 'next-auth/providers/credentials'
+
+import { login, signUp } from '@/app/api/auth'
+import { APIError, APIErrorType } from './error'
 
 export const authOptions: AuthOptions = {
   session: {
@@ -12,23 +16,38 @@ export const authOptions: AuthOptions = {
       name: 'Credentials',
       credentials: {
         email: {
-          label: 'email',
+          label: 'Email',
           type: 'text',
         },
         password: { label: 'Password', type: 'password' },
+        name: {
+          label: 'Name',
+          type: 'text',
+        },
       },
       async authorize(credentials, req) {
-        console.log('credentials are: ', credentials)
         let result = null
         try {
-          const user = await login({
-            email: credentials?.email,
-            password: credentials?.password,
-          })
-          result = user
+          if (credentials?.name) {
+            result = await signUp({
+              email: credentials?.email,
+              password: credentials?.password,
+              name: credentials?.name,
+            })
+          } else {
+            result = await login({
+              email: credentials?.email,
+              password: credentials?.password,
+            })
+          }
         } catch (e) {
-          console.log(e)
-          throw new Error(JSON.stringify(e))
+          if (e instanceof APIError) {
+            throw new Error(JSON.stringify({
+              message: e.message,
+              status: e.status,
+              path: e.path
+            }))
+          }
         }
         return result
       },
@@ -40,30 +59,33 @@ export const authOptions: AuthOptions = {
     newUser: '/signup',
   },
   callbacks: {
-    async signIn(params) {
-      if (params.user) {
-        return true
-      }
-      return false
-    },
-    async session({ user, session, token }) {
-      console.log('from session', {
-        token,
-        user,
-        session,
-      })
-      session.user = user
+    session: async function({
+      session,
+      token,
+      user,
+    }: {
+      session: Session & { token: string | undefined }
+      token: JWT
+      user: AdapterUser
+    }) {
+      const sanitizedToken: {
+        user?: {}
+        token?: string
+      } = Object.keys(token).reduce((p, c) => {
+        if (c !== 'iat' && c !== 'exp' && c !== 'jti' && c !== 'apiToken') {
+          return { ...p, [c]: token[c] }
+        } else {
+          return p
+        }
+      }, {})
+      session.user = sanitizedToken.user
+      session.token = sanitizedToken.token
       return session
     },
-    jwt({ token, user, account, profile }) {
-      console.log({
-        account,
-        user,
-        profile,
-      })
-      token.user = user?.user
-      token.token = user?.token
-      console.log('jwt token', token)
+    async jwt({ token, user }) {
+      if (typeof user !== 'undefined') {
+        return user as unknown as JWT
+      }
       return token
     },
   },

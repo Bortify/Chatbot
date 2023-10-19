@@ -6,6 +6,6 @@ import { PineCone as PineConfig } from '../config.js'
 export const prisma = new PrismaClient()
 
 export const pinecone = new Pinecone({
-  apiKey: PineConfig.API_KEY,
-  environment: PineConfig.ENVIRONMENT,
+    apiKey: PineConfig.API_KEY,
+    environment: PineConfig.ENVIRONMENT,
 })

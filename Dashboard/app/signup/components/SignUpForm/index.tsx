@@ -7,6 +7,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import Typography from '@/components/Typography'
+import { signIn } from 'next-auth/react'
+import { useState } from 'react'
+import { APIError } from '@/lib/error'
 
 const validationSchema = z
   .object({
@@ -36,8 +39,13 @@ const validationSchema = z
   })
 
 type ValidationSchema = z.infer<typeof validationSchema>
+type SignUpErrorType =  {
+  status: number
+  error: string
+}
 
 const SignUpForm: React.FC<{}> = () => {
+  const [loading, setLoading] = useState(false)
   const {
     register,
     handleSubmit,
@@ -46,8 +54,30 @@ const SignUpForm: React.FC<{}> = () => {
     resolver: zodResolver(validationSchema),
   })
 
-  const onSubmit: SubmitHandler<ValidationSchema> = (data) => {
-    console.log(data)
+  const onSubmit: SubmitHandler<ValidationSchema> = async (data) => {
+    try {
+      setLoading(true)
+      const res = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        redirect: false,
+      })
+      if(res?.error){
+        throw new APIError(JSON.parse(res.error))
+      }
+    } catch (e) {
+      if(e instanceof APIError){
+        // TODO: Handle case where when user has already an account then ask him to login.
+        console.log('error in sign up',{
+          message: e.message,
+          status: e.status,
+          path: e.path
+        }) 
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -93,7 +123,13 @@ const SignUpForm: React.FC<{}> = () => {
         autoComplete='confirm-password'
         error={errors.confirmPassword?.message}
       />
-      <Button size='medium' color='primary' state='none' block className='mt-6'>
+      <Button
+        size='medium'
+        color='primary'
+        state='none'
+        block
+        className='mt-6'
+        loading={loading}>
         Sign Up
       </Button>
       <div className='flex items-center justify-center gap-2 mt-4'>

@@ -9,6 +9,7 @@ import { signIn } from 'next-auth/react'
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import Typography from '@/components/Typography'
+import { APIError } from '@/lib/error'
 
 const validationSchema = z.object({
   email: z.string().min(1, { message: 'Email is required' }).email({
@@ -37,14 +38,18 @@ const LoginForm: React.FC<{}> = () => {
   const onSubmit: SubmitHandler<ValidationSchema> = async (data) => {
     setLoading(true)
     try {
-      const result = await signIn('credentials', {
+      const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false
       })
-      console.log('result after login is', result)
+      if(res?.error){
+        throw new APIError(JSON.parse(res.error))
+      }
     } catch (e) {
-      console.log('error is', e)
+      if(e instanceof APIError){
+        // TODO: Handle all errors here like wrong password
+      }
     } finally {
       setLoading(false)
     }
