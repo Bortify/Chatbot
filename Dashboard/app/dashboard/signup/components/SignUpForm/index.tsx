@@ -3,13 +3,15 @@ import Link from 'next/link'
 import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { signIn } from 'next-auth/react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import Typography from '@/components/Typography'
-import { signIn } from 'next-auth/react'
-import { useState } from 'react'
 import { APIError } from '@/lib/error'
+import { toaster } from '@/components/Toaster'
 
 const validationSchema = z
   .object({
@@ -39,12 +41,10 @@ const validationSchema = z
   })
 
 type ValidationSchema = z.infer<typeof validationSchema>
-type SignUpErrorType =  {
-  status: number
-  error: string
-}
 
 const SignUpForm: React.FC<{}> = () => {
+  const router = useRouter()
+  const [alertVisibile, setAlertVisibility] = useState(false)
   const [loading, setLoading] = useState(false)
   const {
     register,
@@ -63,17 +63,21 @@ const SignUpForm: React.FC<{}> = () => {
         name: data.name,
         redirect: false,
       })
-      if(res?.error){
+      if (res?.error) {
         throw new APIError(JSON.parse(res.error))
       }
+      router.push('/dashboard')
     } catch (e) {
-      if(e instanceof APIError){
-        // TODO: Handle case where when user has already an account then ask him to login.
-        console.log('error in sign up',{
-          message: e.message,
-          status: e.status,
-          path: e.path
-        }) 
+      if (e instanceof APIError) {
+        if (e.status === 409) {
+          toaster.warn(
+            'Seems like you already got an account.',
+            'w-max',
+            <Link href={'/dashboard/login'} className='font-bold underline'>
+              Login Here
+            </Link>
+          )
+        }
       }
     } finally {
       setLoading(false)
@@ -111,6 +115,9 @@ const SignUpForm: React.FC<{}> = () => {
         })}
         autoComplete='current-password'
         error={errors.password?.message}
+        onFocus={() => {
+          setAlertVisibility(true)
+        }}
       />
       <Form.Field.Input
         label={`Confirm your password.`}
@@ -122,6 +129,9 @@ const SignUpForm: React.FC<{}> = () => {
         })}
         autoComplete='confirm-password'
         error={errors.confirmPassword?.message}
+        onFocus={() => {
+          setAlertVisibility(true)
+        }}
       />
       <Button
         size='medium'
@@ -134,10 +144,52 @@ const SignUpForm: React.FC<{}> = () => {
       </Button>
       <div className='flex items-center justify-center gap-2 mt-4'>
         <Typography.Content size='sm'>{'Got an Account? '}</Typography.Content>
-        <Link className='text-sm font-semibold underline' href='/login'>
+        <Link
+          className='text-sm font-semibold underline'
+          href='/dashboard/login'>
           Login here
         </Link>
       </div>
+      {alertVisibile && (
+        <div className='toast toast-end card'>
+          <div className='rounded-lg shadow-lg card-body'>
+            <div className='justify-end card-actions'>
+              <Button
+                size='extra-small'
+                color='none'
+                className='btn-square'
+                onClick={() => {
+                  setAlertVisibility(false)
+                }}>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='w-6 h-6 bg-white'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'>
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    d='M6 18L18 6M6 6l12 12'
+                  />
+                </svg>
+              </Button>
+            </div>
+            <div>
+              <h3 className='mb-2 font-bold'>
+                Remember! Your password must have following:{' '}
+              </h3>
+              <ul className='pl-5 text-xs list-disc'>
+                <li>At least one upparecase letter.</li>
+                <li>At least one lowercase letter.</li>
+                <li>At least one digit.</li>
+                <li>At least one special character from the set: !@#$%^&*</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   )
 }

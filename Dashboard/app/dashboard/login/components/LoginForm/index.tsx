@@ -5,11 +5,13 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 import Button from '@/components/Button'
 import Form from '@/components/Form'
 import Typography from '@/components/Typography'
 import { APIError } from '@/lib/error'
+import { toaster } from '@/components/Toaster'
 
 const validationSchema = z.object({
   email: z.string().min(1, { message: 'Email is required' }).email({
@@ -26,6 +28,7 @@ const validationSchema = z.object({
 type ValidationSchema = z.infer<typeof validationSchema>
 
 const LoginForm: React.FC<{}> = () => {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const {
     register,
@@ -41,14 +44,25 @@ const LoginForm: React.FC<{}> = () => {
       const res = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        redirect: false
+        redirect: false,
       })
-      if(res?.error){
+      if (res?.error) {
         throw new APIError(JSON.parse(res.error))
       }
+      router.push('/dashboard')
     } catch (e) {
-      if(e instanceof APIError){
-        // TODO: Handle all errors here like wrong password
+      if (e instanceof APIError) {
+        if (e.status === 404) {
+          toaster.warn(
+            `Seems like Email you're trying with has no account on our database.`,
+            'w-max',
+            <Link href={'/dashboard/signup'} className='font-bold underline'>
+              Create Account here
+            </Link>
+          )
+        } else if (e.status === 401 && e.path?.[0] === 'password') {
+          toaster.error('Password is incorrect.', 'w-max')
+        }
       }
     } finally {
       setLoading(false)
@@ -90,8 +104,13 @@ const LoginForm: React.FC<{}> = () => {
         <Typography.Content size='sm'>
           {"Don't have Account? "}
         </Typography.Content>
-        <Link className='text-sm font-semibold underline' href='/signup'>
+        <Link className='text-sm font-semibold underline' href='/dashboard/signup'>
           SignUp here
+        </Link>
+      </div>
+      <div className='flex items-center justify-center gap-2 mt-4'>
+        <Link className='text-sm font-semibold underline' href='/forgot-password'>
+          Forgot Password
         </Link>
       </div>
     </form>

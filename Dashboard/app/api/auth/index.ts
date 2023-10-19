@@ -23,3 +23,26 @@ export function getProfile() {
     options: {},
   })
 }
+
+export function forgotPassword(query: { email: string }) {
+  return serverApi('/auth/reset/send', {
+    body: query,
+    method: 'POST',
+    options: {
+      useNextResponse: true,
+    },
+  })
+}
+
+export function forgotPasswordHandler(query: { token: string | null, password: string }){
+  return serverApi('auth/reset/handle',{
+    method: 'POST',
+    options: {
+      useNextResponse: true
+    },
+    body: {
+      token: query.token,
+      password: query.password
+    }
+  })
+}

@@ -1,5 +1,5 @@
 import Mailgun from 'mailgun-js'
-import { EmailClient as EmailClientConfig } from '../clients/email.js'
+import { EmailClient as EmailClientConfig } from '../config.js'
 
 export class EmailClient {
     #client
