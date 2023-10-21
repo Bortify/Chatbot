@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import Form from '@/components/Form'
 import Button from '@/components/Button'
 import { forgotPasswordHandler } from '@/app/api/browser/auth'
+import { APIError } from '@/lib/error'
 
 const validationSchema = z
   .object({
@@ -36,9 +37,9 @@ type ValidationSchema = z.infer<typeof validationSchema>
 const ForgotPasswordPage: NextPage = () => {
   const router = useRouter()
   const [alertVisibile, setAlertVisibility] = useState(false)
-  const [state, setState] = useState<'loading' | 'error' | 'idle' | 'success'>(
-    'idle'
-  )
+  const [state, setState] = useState<
+    'loading' | 'error' | 'idle' | 'success' | 'invalid'
+  >('idle')
   const searchParams = useSearchParams()
   const {
     register,
@@ -58,14 +59,17 @@ const ForgotPasswordPage: NextPage = () => {
         password: data.confirmPassword,
         token,
       })
-      router.push('/login')
+      router.push('/dashboard/login')
       setState('success')
     } catch (e) {
       console.log(e)
+      if(e instanceof APIError){
+        console.log(e.status)
+      }
       setState('error')
     }
   }
-  
+
   if (!email || !token) {
     notFound()
   }
@@ -172,6 +176,7 @@ const ForgotPasswordPage: NextPage = () => {
                 Remember! Your password must have following:{' '}
               </h3>
               <ul className='pl-5 text-xs list-disc'>
+                <li>At least 8 characters long.</li>
                 <li>At least one upparecase letter.</li>
                 <li>At least one lowercase letter.</li>
                 <li>At least one digit.</li>

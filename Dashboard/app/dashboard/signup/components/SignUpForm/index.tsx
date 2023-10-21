@@ -181,6 +181,7 @@ const SignUpForm: React.FC<{}> = () => {
                 Remember! Your password must have following:{' '}
               </h3>
               <ul className='pl-5 text-xs list-disc'>
+                <li>At least 8 characters long.</li>
                 <li>At least one upparecase letter.</li>
                 <li>At least one lowercase letter.</li>
                 <li>At least one digit.</li>

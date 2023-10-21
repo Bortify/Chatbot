@@ -6,14 +6,24 @@ export const addUserMiddleware = async (req, res, next) => {
     const bearerToken = req.headers?.authorization?.split(' ')[1]
     if (!bearerToken) {
         return res.status(401).json({
-            error: 'unauthorized request',
+            errors: [
+                {
+                    message: 'unauthorized request',
+                    path: ['auth'],
+                },
+            ],
         })
     }
 
     const decodedValue = JWT.decode(bearerToken)
     if (!decodedValue) {
         return res.status(401).json({
-            error: 'unauthorized request',
+            errors: [
+                {
+                    message: 'unauthorized request',
+                    path: ['auth'],
+                },
+            ],
         })
     }
     const userId = decodedValue.userId
@@ -21,7 +31,12 @@ export const addUserMiddleware = async (req, res, next) => {
 
     if (!user) {
         return res.status(401).json({
-            error: 'unauthorized request',
+            errors: [
+                {
+                    message: 'unauthorized request',
+                    path: ['auth'],
+                },
+            ],
         })
     }
 
@@ -29,7 +44,12 @@ export const addUserMiddleware = async (req, res, next) => {
         JWT.verify(bearerToken, `${Auth.SECRET}.${user.salt}`)
     } catch (e) {
         return res.status(401).json({
-            error: 'unauthorized request',
+            errors: [
+                {
+                    message: 'unauthorized request',
+                    path: ['auth'],
+                },
+            ],
         })
     }
 
@@ -41,8 +61,13 @@ export const checkForEmailVerfification = (req, res, next) => {
     const user = req.user
 
     if (!user.isEmailVerified) {
-        return res.status(400).json({
-            message: 'email not verified',
+        return res.status(409).json({
+            errors: [
+                {
+                    message: 'email not verified',
+                    path: ['auth'],
+                },
+            ],
         })
     }
 

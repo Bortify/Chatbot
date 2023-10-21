@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import {
     createOrganisation,
+    listOrganisationsByUserId,
     updateOrganisation,
 } from '../models/organisation.js'
 
@@ -71,4 +72,18 @@ export const ArchiveOrganisation = async (req, res) => {
     return res.status(200).json({
         message: 'organisation deleted',
     })
+}
+
+export const ListOrganisation = async (req, res) => {
+    const organisations = await listOrganisationsByUserId(req.user.id, {
+        archived: false,
+    })
+    return res.json(
+        organisations.map((org) => ({
+            name: org.name,
+            id: org.id,
+            description: org.description,
+            logo: org.logo,
+        }))
+    )
 }

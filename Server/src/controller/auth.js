@@ -22,7 +22,7 @@ export const CreateAccount = async (req, res) => {
     const schema = Joi.object({
         email: Joi.string().email().required(),
         phone: Joi.string()
-            .pattern(/r'^\d{10}$'/)
+            .pattern(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/)
             .optional()
             .default(null),
         name: Joi.string().min(1).max(200).required(),
@@ -165,7 +165,6 @@ export const GetProfile = async (req, res) => {
         email: req.user.email,
         phone: req.user?.phone || null,
         isEmailVerified: req.user.isEmailVerified,
-        organisations: req.user.organisation,
     })
 }
 
@@ -405,9 +404,8 @@ export const HandleEmailVerifyingRequest = async (req, res) => {
 
 export const UpdateProfile = async (req, res) => {
     const schema = Joi.object({
-        email: Joi.string().email().optional(),
         phone: Joi.string()
-            .pattern(/r'^\d{10}$'/)
+            .pattern(/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/)
             .optional(),
         name: Joi.string().min(1).max(200).optional(),
     })
@@ -430,13 +428,14 @@ export const UpdateProfile = async (req, res) => {
     if (value?.email) {
         user = await updateUserById(req.user.id, {
             ...value,
-            isEmailVerified: false,
         })
     } else {
         user = await updateUserById(req.user.id, value)
     }
 
-    return res.status(200).json(user)
+    return res.status(200).json({
+        message: 'ok'
+    })
 }
 
 export const ArchiveUser = async (req, res) => {

@@ -12,6 +12,7 @@ type SpinerType = {
     | 'warning'
     | 'error'
     | 'none'
+    | 'gray'
 }
 
 const Spinner: React.FC<SpinerType> = ({ size = 'small', color = 'none' }) => (
@@ -41,5 +42,6 @@ const ColorMap = {
   success: 'text-success',
   warning: 'text-warning',
   error: 'text-error',
+  gray: 'text-gray-300',
   none: '',
 }

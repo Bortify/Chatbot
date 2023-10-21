@@ -25,3 +25,14 @@ export const findOrganisation = (orgId, userId, filter = {}) =>
             ...filter,
         },
     })
+
+export const listOrganisationsByUserId = (userId, filter = {}) =>
+    prisma.organisation.findMany({
+        where: {
+            userId,
+            ...filter,
+        },
+        orderBy: {
+            id: 'asc',
+        },
+    })

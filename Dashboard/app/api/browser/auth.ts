@@ -1,3 +1,4 @@
+import { EmailVerificationRequest } from '@/constants/profile'
 import browserApi from '.'
 
 export function forgotPassword(query: { email: string }) {
@@ -18,6 +19,39 @@ export function forgotPasswordHandler(query: {
     body: {
       token: query.token,
       password: query.password,
+    },
+  })
+}
+
+export function getProfile() {
+  return browserApi('/api/profile', {
+    method: 'GET',
+    body: null,
+  })
+}
+
+export function sendEmailVerification() {
+  return browserApi('/api/profile/verify', {
+    method: 'POST',
+    body: {
+      type: EmailVerificationRequest.send,
+    },
+  })
+}
+
+export function handleEmailVerification({
+  email,
+  token,
+}: {
+  email: string
+  token: string
+}) {
+  return browserApi('/api/profile/verify', {
+    method: 'POST',
+    body: {
+      type: EmailVerificationRequest.handle,
+      email,
+      token,
     },
   })
 }

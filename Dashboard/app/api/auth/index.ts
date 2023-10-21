@@ -16,12 +16,17 @@ export function signUp(query: Object) {
   })
 }
 
-export function getProfile() {
-  return serverApi('/auth', {
-    body: {},
-    method: 'GET',
-    options: {},
-  })
+export async function getProfile() {
+  try {
+    const data = await serverApi('/auth', {
+      body: {},
+      method: 'GET',
+      options: {},
+    })
+    return data
+  } catch (e) {
+    return { error: e }
+  }
 }
 
 export function forgotPassword(query: { email: string }) {
@@ -34,15 +39,18 @@ export function forgotPassword(query: { email: string }) {
   })
 }
 
-export function forgotPasswordHandler(query: { token: string | null, password: string }){
-  return serverApi('auth/reset/handle',{
+export function forgotPasswordHandler(query: {
+  token: string | null
+  password: string
+}) {
+  return serverApi('auth/reset/handle', {
     method: 'POST',
     options: {
-      useNextResponse: true
+      useNextResponse: true,
     },
     body: {
       token: query.token,
-      password: query.password
-    }
+      password: query.password,
+    },
   })
 }

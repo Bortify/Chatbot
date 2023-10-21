@@ -8,9 +8,9 @@ import SignUpForm from './components/SignUpForm'
 const SignUpPage: NextPage = (props) => {
   return (
     <section className='flex w-screen h-screen'>
-      <div className='flex flex-1 bg-blue-200'></div>
-      <div className='flex flex-col items-center justify-center flex-1 bg-white'>
-        <div className='w-full max-w-lg p-6 sm:p-8'>
+      <div className='flex flex-1 bg-white'></div>
+      <div className='flex flex-col items-start justify-center flex-1 bg-white shadow-xl'>
+        <div className='w-full max-w-lg p-6 m-10 sm:p-8'>
           <Typography.Heading
             variant='h1'
             size='3xl'

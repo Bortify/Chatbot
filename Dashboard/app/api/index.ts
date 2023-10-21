@@ -26,11 +26,15 @@ export default async function serverApi(
   config: ServerApiParametersType
 ) {
   const baseConfig = await getBaseConfig({})
-  return fetch(getUrl(url), {
+  const payload: any = {
     body: JSON.stringify(config.body),
     headers: { ...baseConfig.headers },
     method: config.method,
-  }).then((res) => {
+  }
+  if(config.method === 'GET'){
+    delete payload.body
+  }
+  return fetch(getUrl(url),payload).then((res) => {
     return handleResponse(res, config.options)
   })
 }
@@ -77,10 +81,11 @@ async function handleResponse(response: Response, options: RequestOptionsType) {
     const isOk = response.ok
     if (!isOk) {
       const error = data || response
+      console.log('error in server api: ',error)
       throw new APIError({
         message: error.errors[0].message,
         status: response.status,
-        path: error.errors[0].path
+        path: error.errors[0].path,
       })
     }
 

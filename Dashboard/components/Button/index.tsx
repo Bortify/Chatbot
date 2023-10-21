@@ -43,7 +43,7 @@ const Button: React.FC<
       disabled={loading}
       target={outerLink && '_blank'}
       className={classNames(
-        'relative overflow-hidden',
+        'relative overflow-hidden ease-in-out duration-200 transition-all',
         ColorBtnMap[color],
         StateBtnMap[state],
         BtnSizeMap[size],
@@ -85,8 +85,8 @@ const ColorBtnMap = {
 }
 
 const StateBtnMap = {
-  success: 'btn-success',
-  error: 'btn-error',
+  success: 'btn-success text-white',
+  error: 'btn-error text-white',
   warning: 'btn-warning',
   info: 'btn-info',
   none: '',
