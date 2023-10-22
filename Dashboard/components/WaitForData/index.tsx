@@ -7,7 +7,7 @@ import Spinner from '../Spinner'
 type PropType = {
   loading: boolean
   children: ReactNode
-  error: boolean | null
+  error?: boolean | null
 }
 
 function WaitForData({ children, loading, error }: PropType) {

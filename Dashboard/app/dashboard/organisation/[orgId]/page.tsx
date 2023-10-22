@@ -3,12 +3,12 @@ import { NextPage } from 'next'
 
 type PagePropsType = {
   params: {
-    id: number
+    orgId: number
   }
 }
 
-const OrganisationPage: NextPage<PagePropsType> = ({ params: { id } }) => (
-  <Organisation orgId={id} />
+const OrganisationPage: NextPage<PagePropsType> = ({ params: { orgId } }) => (
+  <Organisation orgId={orgId} />
 )
 
 export default OrganisationPage

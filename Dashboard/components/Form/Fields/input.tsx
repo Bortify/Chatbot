@@ -12,6 +12,7 @@ type InputProps = {
   label?: string | null
   error?: string | null
   size?: 'input-sm' | 'input-md' | 'input-lg'
+  helpText?: string | null
 }
 
 const InputField = forwardRef<
@@ -28,6 +29,7 @@ const InputField = forwardRef<
       disabled,
       size = 'input-md',
       type,
+      helpText,
       ...restProps
     },
     _ref
@@ -35,11 +37,10 @@ const InputField = forwardRef<
     const [showPass, setPassVisibility] = useState(false)
     return (
       <div className={classNames('w-full form-control', className)}>
-        {label && (
-          <label className='label' htmlFor={name}>
-            <span className='label-text'>{label}</span>
-          </label>
-        )}
+        <label className='label' htmlFor={name}>
+          {label && <span className='label-text'>{label}</span>}
+          {helpText && <span className='label-text-alt'>{helpText}</span>}
+        </label>
         <div
           className={classNames(
             'w-full input input-bordered outline-none overflow-hidden flex items-center',

@@ -2,8 +2,7 @@
 
 import greetingTime from 'greeting-time'
 import { signOut } from 'next-auth/react'
-import { useState } from 'react'
-import { Edit, LogOut } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 import Typography from '@/components/Typography'
@@ -16,8 +15,6 @@ import OrganisationsList from './components/OrganisationsList'
 
 const Home: React.FC<{}> = () => {
   const greeting = greetingTime(new Date())
-  const [profileModalVisible, setProfileModalVisibility] =
-    useState<boolean>(false)
   
   const profileQuery = useQuery({
     queryKey: ['profile'],
@@ -47,14 +44,6 @@ const Home: React.FC<{}> = () => {
               </Typography.Content>
             </div>
             <div className='flex gap-2'>
-              {/* <Button
-                color='ghost'
-                onClick={() => {
-                  setProfileModalVisibility(true)
-                }}>
-                Edit Profile
-                <Edit className='w-4 h-4' />
-              </Button> */}
               <Button
                 color='none'
                 state='error'
@@ -69,10 +58,6 @@ const Home: React.FC<{}> = () => {
           <OrganisationsList />
         </div>
       </section>
-      <ProfileModal
-        active={profileModalVisible}
-        visibilityDispatcher={setProfileModalVisibility}
-      />
     </WaitForData>
   )
 }

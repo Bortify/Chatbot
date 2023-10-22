@@ -35,3 +35,20 @@ export async function PUT(
     },
   })
 }
+
+export async function DELETE(
+  request: NextRequest,
+  params: { params: { orgId: number } }
+) {
+  const orgId = params.params.orgId
+  if (!orgId) {
+    throw new Error('Org Id must be provided')
+  }
+  return serverApi(`/organisation/${orgId}`, {
+    method: 'DELETE',
+    body: {},
+    options: {
+      useNextResponse: true,
+    },
+  })
+}

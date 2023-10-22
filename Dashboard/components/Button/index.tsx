@@ -62,6 +62,7 @@ const Button: React.FC<
         className={classNames(
           'absolute top-0 left-0 grid w-full h-full place-items-center cursor-not-allowed',
           ColorBtnMap[color],
+          StateBtnMap[state],
           {
             hidden: !loading,
           }

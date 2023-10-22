@@ -27,3 +27,10 @@ export const updateOrganisation = (orgId: number, payload: Object) => {
     body: payload,
   })
 }
+
+export const deleteOrganisation = (orgId: number) => {
+  return browserApi(`/api/organisation/${orgId}`, {
+    method: 'DELETE',
+    body: null,
+  })
+}

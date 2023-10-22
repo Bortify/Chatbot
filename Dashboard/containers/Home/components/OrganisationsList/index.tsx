@@ -34,8 +34,7 @@ function OrganisationsList() {
       },
       {
         yPercent: 0,
-        stagger: 0.2,
-        duration: 0.3,
+        stagger: 0.05,
         delay: 0.1,
         opacity: 1,
         ease: 'elastic.out(1,0.3)',
@@ -104,7 +103,7 @@ function Card({ organisation }: { organisation: OrganisationType }) {
   return (
     <Link href={`/dashboard/organisation/${organisation.id}`}>
       <div
-        className='flex flex-col items-center justify-center w-full h-full duration-150 ease-in-out border rounded-lg cursor-pointer aspect-square hover:shadow-md orgCards'
+        className='flex flex-col items-center justify-center w-full h-full p-5 duration-150 ease-in-out border rounded-lg cursor-pointer aspect-square hover:shadow-md orgCards'
         style={{
           opacity: 0,
         }}>
@@ -122,7 +121,7 @@ function Card({ organisation }: { organisation: OrganisationType }) {
           fontFamily='manrope'
           variant='h4'
           boldness={700}
-          className='text-slate-950'>
+          className='text-center text-slate-950'>
           {organisation.name}
         </Typography.Heading>
       </div>

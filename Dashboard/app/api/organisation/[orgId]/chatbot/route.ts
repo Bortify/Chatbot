@@ -6,14 +6,26 @@ export async function GET(
   params: { params: { orgId: number } }
 ) {
   const orgId = params.params.orgId
-  if (!orgId) {
-    throw new Error('org id must be provided')
-  }
   return serverApi(`/organisation/${orgId}/chatbot`, {
     method: 'GET',
     options: {
       useNextResponse: true,
     },
     body: {},
+  })
+}
+
+export async function POST(
+  request: NextRequest,
+  params: { params: { orgId: number } }
+) {
+  const orgId = params.params.orgId
+  const payload = await request.json()
+  return serverApi(`/organisation/${orgId}/chatbot`, {
+    method: 'POST',
+    options: {
+      useNextResponse: true,
+    },
+    body: payload,
   })
 }

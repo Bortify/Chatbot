@@ -14,6 +14,7 @@ import Typography from '@/components/Typography'
 import { listChatbots } from '@/app/api/browser/chatbot'
 
 import Chatbot from './assets/chatbot.png'
+import ChatbotModal from '@/components/ChatbotModal'
 
 export default function ChatbotList({ orgId }: { orgId: number }) {
   const chatbotQuery = useQuery({
@@ -21,10 +22,9 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
     queryFn: () => listChatbots({ orgId }),
     refetchOnWindowFocus: false,
   })
-
-  const [chatbotModalVisible, setChatbotModalVisibility] =
-    useState<boolean>(false)
+    
   const loading = chatbotQuery.isLoading || chatbotQuery.isFetching
+  const [createChatbotModalVisible, setcreateChatbotModalVisible] = useState<boolean>(false)
 
   useEffect(() => {
     gsap.fromTo(
@@ -35,8 +35,7 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
       },
       {
         yPercent: 0,
-        stagger: 0.1,
-        duration: 0.5,
+        stagger: 0.05,
         delay: 0.3,
         opacity: 1,
         ease: 'elastic.out(1,0.3)',
@@ -57,7 +56,7 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
               size='small'
               className='text-white'
               onClick={() => {
-                setChatbotModalVisibility(true)
+                setcreateChatbotModalVisible(true)
               }}>
               Create <Plus className='w-5 h-5' />
             </Button>
@@ -82,7 +81,7 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
                 color={'none'}
                 className='bg-gray-600 btn-circle'
                 onClick={() => {
-                  setChatbotModalVisibility(true)
+                  setcreateChatbotModalVisible(true)
                 }}>
                 <Plus className='w-5 h-5 text-white text-bold' />
               </Button>
@@ -90,6 +89,7 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
           </div>
         )}
       </div>
+      <ChatbotModal active={createChatbotModalVisible} visibilityDispatcher={setcreateChatbotModalVisible} type='CREATE' orgId={orgId}/>
     </>
   )
 }

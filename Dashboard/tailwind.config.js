@@ -16,7 +16,7 @@ module.exports = {
         xxs: '10px',
       },
       maxWidth: {
-        container: '1200px',
+        container: '1400px',
       },
       maxHeight: {
         container: '600px'
