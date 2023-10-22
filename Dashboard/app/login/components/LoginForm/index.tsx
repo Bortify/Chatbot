@@ -49,14 +49,16 @@ const LoginForm: React.FC<{}> = () => {
       if (res?.error) {
         throw new APIError(JSON.parse(res.error))
       }
-      router.push('/dashboard')
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 1000)
     } catch (e) {
       if (e instanceof APIError) {
         if (e.status === 404) {
           toaster.warn(
             `Seems like Email you're trying with has no account on our database.`,
             'w-max',
-            <Link href={'/dashboard/signup'} className='font-bold underline'>
+            <Link href={'/signup'} className='font-bold underline'>
               Create Account here
             </Link>
           )
@@ -64,7 +66,6 @@ const LoginForm: React.FC<{}> = () => {
           toaster.error('Password is incorrect.', 'w-max')
         }
       }
-    } finally {
       setLoading(false)
     }
   }
@@ -104,12 +105,14 @@ const LoginForm: React.FC<{}> = () => {
         <Typography.Content size='sm'>
           {"Don't have Account? "}
         </Typography.Content>
-        <Link className='text-sm font-semibold underline' href='/dashboard/signup'>
+        <Link className='text-sm font-semibold underline' href='/signup'>
           SignUp here
         </Link>
       </div>
       <div className='flex items-center justify-center gap-2 mt-4'>
-        <Link className='text-sm font-semibold underline' href='/forgot-password'>
+        <Link
+          className='text-sm font-semibold underline'
+          href='/forgot-password'>
           Forgot Password
         </Link>
       </div>

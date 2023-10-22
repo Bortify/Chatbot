@@ -1,7 +1,11 @@
 import Joi from 'joi'
 import { KnowledgeType } from '@prisma/client'
 
-import { createChatbot, updateChatBot } from '../models/chatbot.js'
+import {
+    createChatbot,
+    listChatbotByOrg,
+    updateChatBot,
+} from '../models/chatbot.js'
 import {
     createKnowledgeSource,
     updateKnowledgeSource,
@@ -34,7 +38,14 @@ export const CreateChatBot = async (req, res) => {
         ...value,
         organisationId: req.organisation.id,
     })
-    return res.status(200).json(chatbot)
+    return res.status(200).json({
+        name: chatbot.name,
+        id: chatbot.id,
+        key: chatbot.key,
+        tokens: chatbot.tokens,
+        active: chatbot.active,
+        configuration: chatbot.configuration,
+    })
 }
 
 export const UpdateChatbot = async (req, res) => {
@@ -263,4 +274,15 @@ export const CreatingKnowledgeSourceStatusProvider = async (req, res) => {
     }
 
     return res.status(200).json(dataFromCache)
+}
+
+export const ListChatBot = async (req, res) => {
+    const chatbots = await listChatbotByOrg(req.organisation.id)
+    return res.json(
+        chatbots.map((chatbot) => ({
+            id: chatbot.id,
+            active: chatbot.active,
+            name: chatbot.name,
+        }))
+    )
 }

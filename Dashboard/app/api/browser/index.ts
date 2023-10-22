@@ -10,7 +10,6 @@ export default async function browserApi(
   url: string,
   config: BrowserApiParametersType
 ) {
-  console.log('request made to next server from browserAPI')
   let payload: any = {
     method: config.method,
   }
@@ -47,11 +46,10 @@ async function handleResponse(response: Response) {
       console.log('ERROR IN HANDLE RESPONSE BROWSER: ', err)
     }
 
-    console.log('data from browser: ', data)
-
     const isOk = response.ok
     if (!isOk) {
       const error = data || response
+      console.log('error from browser api: ',error)
       throw new APIError({
         message: error.errors[0].message,
         status: response.status,

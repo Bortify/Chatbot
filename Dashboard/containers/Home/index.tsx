@@ -47,14 +47,14 @@ const Home: React.FC<{}> = () => {
               </Typography.Content>
             </div>
             <div className='flex gap-2'>
-              <Button
+              {/* <Button
                 color='ghost'
                 onClick={() => {
                   setProfileModalVisibility(true)
                 }}>
                 Edit Profile
                 <Edit className='w-4 h-4' />
-              </Button>
+              </Button> */}
               <Button
                 color='none'
                 state='error'

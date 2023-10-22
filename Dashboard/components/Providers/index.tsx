@@ -9,11 +9,10 @@ import { queryClient } from '@/utils/query'
 const Providers: React.FC<{
   children: ReactNode
 }> = ({ children }) => {
-    const [qClient] = useState<QueryClient>(queryClient)
+  const [qClient] = useState<QueryClient>(queryClient)
   return (
     <QueryClientProvider client={qClient}>
-      <SessionProvider>
-        {children}</SessionProvider>
+      <SessionProvider>{children}</SessionProvider>
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools client={qClient} />
       )}

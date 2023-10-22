@@ -16,7 +16,7 @@ const SignUpPage: NextPage = (props) => {
             size='3xl'
             className='w-full mb-4'
             boldness={700}>
-            Sign In to your account
+            Create an Account
           </Typography.Heading>
           <SignUpForm />
         </div>

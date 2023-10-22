@@ -30,7 +30,7 @@ function Page() {
 
   useEffect(() => {
     handler()
-  })
+  },[])
 
   return (
     <section className='grid w-screen h-screen place-items-center'>

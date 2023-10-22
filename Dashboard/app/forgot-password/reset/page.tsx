@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { notFound, useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation'
+import { Check, X } from 'lucide-react'
 
 import Form from '@/components/Form'
 import Button from '@/components/Button'
@@ -37,9 +38,9 @@ type ValidationSchema = z.infer<typeof validationSchema>
 const ForgotPasswordPage: NextPage = () => {
   const router = useRouter()
   const [alertVisibile, setAlertVisibility] = useState(false)
-  const [state, setState] = useState<
-    'loading' | 'error' | 'idle' | 'success' | 'invalid'
-  >('idle')
+  const [state, setState] = useState<'LOADING' | 'ERROR' | 'IDLE' | 'SUCCESS'>(
+    'IDLE'
+  )
   const searchParams = useSearchParams()
   const {
     register,
@@ -53,20 +54,21 @@ const ForgotPasswordPage: NextPage = () => {
     token = searchParams.get('token')
 
   const submitHandler: SubmitHandler<ValidationSchema> = async (data) => {
-    setState('loading')
+    if (state !== 'IDLE') return
+    setState('LOADING')
     try {
       await forgotPasswordHandler({
         password: data.confirmPassword,
         token,
       })
-      router.push('/dashboard/login')
-      setState('success')
+      router.push('/login')
+      setState('SUCCESS')
     } catch (e) {
       console.log(e)
-      if(e instanceof APIError){
+      if (e instanceof APIError) {
         console.log(e.status)
       }
-      setState('error')
+      setState('ERROR')
     }
   }
 
@@ -79,40 +81,6 @@ const ForgotPasswordPage: NextPage = () => {
       <form
         className='w-full max-w-md p-6 bg-white rounded-lg shadow-md'
         onSubmit={handleSubmit(submitHandler)}>
-        {state === 'success' && (
-          <div className='mb-2 alert alert-success'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='w-6 h-6 stroke-current shrink-0'
-              fill='none'
-              viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
-              />
-            </svg>
-            <span>Password reset successful. Redirecting to login page.</span>
-          </div>
-        )}
-        {state === 'error' && (
-          <div className='alert alert-error'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='w-6 h-6 stroke-current shrink-0'
-              fill='none'
-              viewBox='0 0 24 24'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
-              />
-            </svg>
-            <span>Some error occured.</span>
-          </div>
-        )}
         <Form.Field.Input
           label={`What's your password?`}
           type='password'
@@ -141,8 +109,30 @@ const ForgotPasswordPage: NextPage = () => {
             setAlertVisibility(true)
           }}
         />
-        <Button block className='mt-2' loading={state === 'loading'}>
-          Reset Password
+        <Button
+          block
+          className='mt-2'
+          loading={state === 'LOADING'}
+          state={
+            state === 'SUCCESS'
+              ? 'success'
+              : state === 'ERROR'
+              ? 'error'
+              : 'none'
+          }>
+          {state === 'IDLE' && 'Reset Password'}
+          {state === 'ERROR' && (
+            <>
+              <X className='w-5 h-5' />
+              Some Error Occured
+            </>
+          )}
+          {state === 'SUCCESS' && (
+            <>
+              <Check className='w-5 h-5' />
+              Done
+            </>
+          )}
         </Button>
       </form>
       {alertVisibile && (

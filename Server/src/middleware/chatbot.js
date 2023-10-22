@@ -7,7 +7,12 @@ export const attachChatbotMiddleware = async (req, res, next) => {
         chatbotId = parseInt(req.params.chatbotId)
     } catch (e) {
         return res.status(400).json({
-            error: 'invalid chat id',
+            errors: [
+                {
+                    message: 'invalid chatbot id',
+                    path: ['chatbot'],
+                },
+            ],
         })
     }
 
@@ -18,7 +23,12 @@ export const attachChatbotMiddleware = async (req, res, next) => {
 
     if (!chatbot) {
         return res.status(404).json({
-            error: 'chatbot not found',
+            errors: [
+                {
+                    message: 'chatbot not found',
+                    path: ['chatbot'],
+                },
+            ],
         })
     }
 

@@ -13,3 +13,17 @@ export const createOrganisation = (payload: object) => {
     body: payload,
   })
 }
+
+export const getOrganisation = (orgId: number) => {
+  return browserApi(`/api/organisation/${orgId}`, {
+    method: 'GET',
+    body: null,
+  })
+}
+
+export const updateOrganisation = (orgId: number, payload: Object) => {
+  return browserApi(`/api/organisation/${orgId}`, {
+    method: 'PUT',
+    body: payload,
+  })
+}

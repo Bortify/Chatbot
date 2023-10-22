@@ -51,3 +51,12 @@ export const findChatbotById = (chatbotId, filter = {}) => {
         },
     })
 }
+
+export const listChatbotByOrg = (orgId,filter={}) => {
+    return prisma.chatbot.findMany({
+        where:{
+            organisationId: orgId,
+            ...filter
+        }
+    })
+}

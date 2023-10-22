@@ -23,7 +23,7 @@ export default async function RootLayout({
   const user = await getProfile()
 
   if (!session?.user || user?.error) {
-    redirect('/dashboard/login')
+    redirect('/login')
   }
 
   return (

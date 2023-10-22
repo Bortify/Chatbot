@@ -73,7 +73,7 @@ const SignUpForm: React.FC<{}> = () => {
           toaster.warn(
             'Seems like you already got an account.',
             'w-max',
-            <Link href={'/dashboard/login'} className='font-bold underline'>
+            <Link href={'/login'} className='font-bold underline'>
               Login Here
             </Link>
           )
@@ -146,7 +146,7 @@ const SignUpForm: React.FC<{}> = () => {
         <Typography.Content size='sm'>{'Got an Account? '}</Typography.Content>
         <Link
           className='text-sm font-semibold underline'
-          href='/dashboard/login'>
+          href='/login'>
           Login here
         </Link>
       </div>

@@ -55,7 +55,7 @@ export const UpdateOrganisation = async (req, res) => {
         })
     }
 
-    const organisation = await updateOrganisation(req.user.id, value)
+    const organisation = await updateOrganisation(req.organisation.id, value)
 
     return res.status(200).json(organisation)
 }

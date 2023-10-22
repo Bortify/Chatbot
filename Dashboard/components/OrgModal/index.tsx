@@ -6,7 +6,10 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { ModalPropType } from '@/lib/type/modal'
-import { createOrganisation } from '@/app/api/browser/organisation'
+import {
+  createOrganisation,
+  updateOrganisation,
+} from '@/app/api/browser/organisation'
 import { invalidate } from '@/utils/query'
 
 import Modal from '../Modal'
@@ -22,10 +25,36 @@ const validationSchema = z.object({
 
 type ValidationType = z.infer<typeof validationSchema>
 
-function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
+export default function OrgModal({
+  active,
+  visibilityDispatcher,
+  type,
+  prevValues,
+  orgId,
+}: ModalPropType) {
+  let title = null
+  let defaultValues
+  let handlerFunction: (payload: ValidationType) => Promise<any>
+  switch (type) {
+    case 'CREATE':
+      title = 'Create New Organisation'
+      handlerFunction = createOrganisation
+      break
+    case 'UPDATE':
+      title = 'Update Organisation Details'
+      handlerFunction = (data: ValidationType) => {
+        if (orgId) {
+          return updateOrganisation(orgId, data)
+        }
+        throw new Error('org id must be provided')
+      }
+      defaultValues = prevValues
+  }
+
   const [state, setState] = useState<'LOADING' | 'IDLE' | 'SUCCESS' | 'ERROR'>(
     'IDLE'
   )
+
   const {
     register,
     handleSubmit,
@@ -33,6 +62,7 @@ function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
     reset,
   } = useForm<ValidationType>({
     resolver: zodResolver(validationSchema),
+    defaultValues,
   })
 
   const createHandler: SubmitHandler<ValidationType> = async (
@@ -40,9 +70,13 @@ function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
   ) => {
     try {
       setState('LOADING')
-      await createOrganisation(data)
+      await handlerFunction(data)
       setState('SUCCESS')
-      invalidate(['organisations'])
+      if (type === 'CREATE') {
+        invalidate(['organisations'])
+      } else {
+        invalidate(['organisation', orgId])
+      }
       visibilityDispatcher(false)
       reset()
       setTimeout(() => {
@@ -59,10 +93,12 @@ function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
         visibilityDispatcher(false)
       }}
       active={active}
-      title='Create New Organisation'>
+      title={title}>
       <form onSubmit={handleSubmit(createHandler)}>
         <Form.Field.Input
-          label={`What's the name?`}
+          label={
+            type === 'CREATE' ? `What's the name?` : `What's the new name?`
+          }
           {...register('name')}
           error={errors.name?.message}
         />
@@ -87,7 +123,7 @@ function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
           {state === 'SUCCESS' && (
             <>
               <Check className='w-4 h-4' />
-              Email Sent
+              Done
             </>
           )}
         </Button>
@@ -95,5 +131,3 @@ function CreateOrgModal({ active, visibilityDispatcher }: ModalPropType) {
     </Modal>
   )
 }
-
-export default CreateOrgModal

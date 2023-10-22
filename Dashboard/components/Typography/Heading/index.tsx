@@ -12,7 +12,7 @@ interface HeadingPropsType
     >,
     FontPropTypes {
   variant: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  size: 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | 'sm'
+  size: 'base' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | '6xl' | 'sm' 
 }
 
 const Heading: React.FC<HeadingPropsType> = ({

@@ -1,11 +1,14 @@
+import Organisation from '@/containers/Organisation'
 import { NextPage } from 'next'
 
 type PagePropsType = {
-    params: {
-        id: number
-    }
+  params: {
+    id: number
+  }
 }
 
-const Organisation: NextPage<PagePropsType> = ({ params: { id } }) => <div>{id}</div>
+const OrganisationPage: NextPage<PagePropsType> = ({ params: { id } }) => (
+  <Organisation orgId={id} />
+)
 
-export default Organisation
+export default OrganisationPage
