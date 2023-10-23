@@ -101,7 +101,7 @@ function ChatbotContainer({ orgId, chatbotId }: PropType) {
           </div>
           <div className='flex flex-1 gap-5 p-5 overflow-y-scroll'>
             <Settings chatbot={chatbotQuery.data} orgId={orgId}/>
-            <CodeSnippets headCode={CHATFRONT_BUNDLE} bodyCode={`<chat-front identifier="${chatbotQuery.data?.key}"></chat-front>`}/>
+            <CodeSnippets headCode={`<script type="module" crossorigin src="${CHATFRONT_BUNDLE}"><script/>`} bodyCode={`<chat-front identifier="${chatbotQuery.data?.key}"></chat-front>`}/>
           </div>
         </div>
       </section>

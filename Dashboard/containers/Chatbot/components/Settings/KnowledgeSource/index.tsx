@@ -16,7 +16,7 @@ type PropTypes = {
   chatbotId?: number
 }
 
-function KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
+function  KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false)
   return (
     <>
