@@ -1,13 +1,13 @@
 import { getKnowledgeSourceById } from '../models/knowledgeSource.js'
 
-export const attachDataStreamMiddleware = async (req, res, next) => {
+export const attachKnowloedgeSource = async (req, res, next) => {
     let knowledgeSourceId = null
 
     try {
         knowledgeSourceId = parseInt(req.params.knowledgeSourceId)
     } catch (e) {
         return res.status(400).json({
-            error: 'invalid data stream id',
+            error: 'invalid knowledgesource id',
         })
     }
 

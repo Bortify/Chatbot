@@ -11,10 +11,10 @@ import {
     ArchiveKnowledgeSource,
     UpdatingKnowledgeSourceStatusProvider,
     CreatingKnowledgeSourceStatusProvider,
-    ListChatBot
+    ListChatBot,
 } from '../controller/chatbot.js'
 import { attachChatbotMiddleware } from '../middleware/chatbot.js'
-import { attachDataStreamMiddleware } from '../middleware/knowledgeSource.js'
+import { attachKnowloedgeSource } from '../middleware/knowledgeSource.js'
 
 const chatbotRouter = Router()
 
@@ -32,19 +32,19 @@ chatbotRouter.post(
 chatbotRouter.put(
     '/:chatbotId/data/:knowledgeSourceId',
     attachChatbotMiddleware,
-    attachDataStreamMiddleware,
+    attachKnowloedgeSource,
     UpdateKnowledgeSourceInChatbot
 )
 chatbotRouter.get(
     '/:chatbotId/data/:knowledgeSourceId',
     attachChatbotMiddleware,
-    attachDataStreamMiddleware,
+    attachKnowloedgeSource,
     GetKnowledgeSource
 )
 chatbotRouter.delete(
     '/:chatbotId/data/:knowledgeSourceId',
     attachChatbotMiddleware,
-    attachDataStreamMiddleware,
+    attachKnowloedgeSource,
     ArchiveKnowledgeSource
 )
 
@@ -52,13 +52,13 @@ chatbotRouter.delete(
 chatbotRouter.get(
     '/:chatbotId/data/:knowledgeSourceId/status/update',
     attachChatbotMiddleware,
-    attachDataStreamMiddleware,
+    attachKnowloedgeSource,
     UpdatingKnowledgeSourceStatusProvider
 )
 chatbotRouter.get(
     '/:chatbotId/data/:knowledgeSourceId/status/create',
     attachChatbotMiddleware,
-    attachDataStreamMiddleware,
+    attachKnowloedgeSource,
     CreatingKnowledgeSourceStatusProvider
 )
 

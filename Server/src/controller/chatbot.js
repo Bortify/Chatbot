@@ -12,6 +12,7 @@ import {
 } from '../models/knowledgeSource.js'
 import eventManager from '../events/index.js'
 import { getDataFromCache } from '../cache/index.js'
+import { deleteIndex } from '../models/pinecone.js'
 
 export const CreateChatBot = async (req, res) => {
     const schema = Joi.object({
@@ -208,13 +209,15 @@ export const ArchiveChatbot = async (req, res) => {
 }
 
 export const ArchiveKnowledgeSource = async (req, res) => {
-    await updateKnowledgeSource(
-        req.chatbot.knowledgeBase.id,
-        req.knowledgeSource.id,
-        {
-            archived: true,
-        }
-    )
+    const knowledgeSource = req.knowledgeSource
+    const chatbot = req.chatbot
+    const indexIds = knowledgeSource.indexIds
+
+    await deleteIndex(chatbot.knowledgeBase.indexName, indexIds)
+
+    await updateKnowledgeSource(chatbot.knowledgeBase.id, knowledgeSource.id, {
+        archived: true,
+    })
 
     return res.status(200).json({
         message: 'knowledge source deleted',

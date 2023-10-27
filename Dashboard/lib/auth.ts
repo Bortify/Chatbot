@@ -42,14 +42,16 @@ export const authOptions: AuthOptions = {
           }
         } catch (e) {
           if (e instanceof APIError) {
-            throw new Error(JSON.stringify({
-              message: e.message,
-              status: e.status,
-              path: e.path
-            }))
+            throw new Error(
+              JSON.stringify({
+                message: e.message,
+                status: e.status,
+                path: e.path,
+              })
+            )
           }
         }
-        console.log('result is: ',result)
+        console.log('result is: ', result)
         return result
       },
     }),
@@ -60,7 +62,7 @@ export const authOptions: AuthOptions = {
     newUser: '/signup',
   },
   callbacks: {
-    session: async function({
+    async session({
       session,
       token,
       user,
@@ -88,6 +90,11 @@ export const authOptions: AuthOptions = {
         return user as unknown as JWT
       }
       return token
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
 }

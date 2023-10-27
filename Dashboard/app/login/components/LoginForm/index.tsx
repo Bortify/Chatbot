@@ -45,13 +45,11 @@ const LoginForm: React.FC<{}> = () => {
         email: data.email,
         password: data.password,
         redirect: false,
+        callbackUrl: '/dashboard',
       })
       if (res?.error) {
         throw new APIError(JSON.parse(res.error))
       }
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1000)
     } catch (e) {
       if (e instanceof APIError) {
         if (e.status === 404) {
@@ -66,6 +64,7 @@ const LoginForm: React.FC<{}> = () => {
           toaster.error('Password is incorrect.', 'w-max')
         }
       }
+    } finally {
       setLoading(false)
     }
   }
