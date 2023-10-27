@@ -2,11 +2,11 @@ import ChatbotContainer from '@/containers/Chatbot'
 
 type PagePropsType = {
   params: {
-    orgId: number
-    chatbotId: number
+    orgId: string
+    chatbotId: string
   }
 }
 
 export default function Chatbot({ params }: PagePropsType) {
-  return <ChatbotContainer chatbotId={params.chatbotId} orgId={params.orgId} />
+  return <ChatbotContainer chatbotId={parseInt(params.chatbotId)} orgId={parseInt(params.orgId)} />
 }

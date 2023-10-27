@@ -58,15 +58,13 @@ function KnowledgeSourceModal({
         chatbotId,
         payload,
       })
-      setTimeout(() => {
-        invalidate(['organisation', orgId, 'chatbot', chatbotId])
-        visibilityDispatcher(false)
-        setSelectedLinks([])
-        reset()
-        setLoading(false)
-      }, 1000)
+      await invalidate(['organisation', orgId, 'chatbot', chatbotId])
+      setSelectedLinks([])
+      reset()
+      visibilityDispatcher(false)
     } catch (e) {
       console.log('error from creating knowledge source ', e)
+    } finally {
       setLoading(false)
     }
   }
