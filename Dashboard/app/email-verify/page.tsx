@@ -1,6 +1,6 @@
 'use client'
 
-import { notFound, redirect, useSearchParams } from 'next/navigation'
+import { notFound, useSearchParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { handleEmailVerification } from '../api/browser/auth'
 import Spinner from '@/components/Spinner'
@@ -8,6 +8,7 @@ import Typography from '@/components/Typography'
 
 function Page() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const email = searchParams.get('email')
   const token = searchParams.get('token')
   const [state, setState] = useState<'ERROR' | 'LOADING'>('LOADING')
@@ -16,21 +17,21 @@ function Page() {
     notFound()
   }
 
-  const handler = async () => {
-    try {
-      await handleEmailVerification({
-        email,
-        token,
-      })
-      redirect('/dashboard')
-    } catch (e) {
-      setState('ERROR')
-    }
-  }
-
   useEffect(() => {
+    const handler = async () => {
+      try {
+        await handleEmailVerification({
+          email,
+          token,
+        })
+        router.push('/dashboard')
+      } catch (e) {
+        console.log(e)
+        setState('ERROR')
+      }
+    }
     handler()
-  },[])
+  },[email,token,router])
 
   return (
     <section className='grid w-screen h-screen place-items-center'>

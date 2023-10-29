@@ -33,4 +33,6 @@ const io = new Server(server, {
 io.use(attachChatBotMiddleware)
 io.on('connection', getOnSocketConnection(io))
 
-server.listen(PORT)
+server.listen(PORT, () => {
+    console.info('\x1b[33m%s\x1b[0m', `Server started on port ${PORT}`)
+})
