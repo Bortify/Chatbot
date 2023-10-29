@@ -5,16 +5,16 @@ type PropType = {
   params: {
     chatbotId: string
     orgId: string
+    knowledgeSourceId: string
   }
 }
 
-export async function POST(request: NextRequest, props: PropType) {
-  const payload = await request.json()
+export async function GET(request: NextRequest, { params }: PropType) {
   return serverApi(
-    `organisation/${props.params.orgId}/chatbot/${props.params.chatbotId}/data`,
+    `/organisation/${params.orgId}/chatbot/${params.chatbotId}/data/${params.knowledgeSourceId}/status`,
     {
-      method: 'POST',
-      body: payload,
+      method: 'GET',
+      body: {},
       options: {
         useNextResponse: true,
       },

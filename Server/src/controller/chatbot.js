@@ -133,7 +133,17 @@ export const AddKnowledgeToChatbot = async (req, res) => {
 }
 
 export const GetChatbotDetails = async (req, res) => {
-    return res.status(200).json(req.chatbot)
+    const chatbot = req.chatbot
+    chatbot.knowledgeBase.knowledgeSource = await Promise.all(
+        chatbot.knowledgeBase.knowledgeSource.map(async (data) => {
+            console.log(data)
+            const CACHING_KEY = `knowledgeSource-${data.id}`
+            const dataFromCache = await getDataFromCache(CACHING_KEY)
+            data.status = dataFromCache.status
+            return data
+        })
+    )
+    return res.status(200).json(chatbot)
 }
 
 export const UpdateKnowledgeSourceInChatbot = async (req, res) => {
@@ -224,8 +234,8 @@ export const ArchiveKnowledgeSource = async (req, res) => {
     })
 }
 
-export const UpdatingKnowledgeSourceStatusProvider = async (req, res) => {
-    const CACHING_KEY = `knowledgeSource:website:update-${req.knowledgeSource.id}`
+export const KnowledgeSourceStatusProvider = async (req, res) => {
+    const CACHING_KEY = `knowledgeSource-${req.knowledgeSource.id}`
     const dataFromCache = await getDataFromCache(CACHING_KEY)
     if (!dataFromCache) {
         return res.status(404).json({
@@ -247,40 +257,13 @@ export const UpdatingKnowledgeSourceStatusProvider = async (req, res) => {
             ],
         })
     }
-    return res.status(200).json(dataFromCache)
-}
-
-export const CreatingKnowledgeSourceStatusProvider = async (req, res) => {
-    const CACHING_KEY = `knowledgeSource:website:create-${req.knowledgeSource.id}`
-
-    const dataFromCache = await getDataFromCache(CACHING_KEY)
-    if (!dataFromCache) {
-        return res.status(404).json({
-            errors: [
-                {
-                    message: 'no status available',
-                    path: ['status'],
-                },
-            ],
-        })
-    }
-
-    if (dataFromCache.status === 'ERROR') {
-        return res.status(400).json({
-            errors: [
-                {
-                    message: dataFromCache.code,
-                    path: ['chatbot'],
-                },
-            ],
-        })
-    }
-
     return res.status(200).json(dataFromCache)
 }
 
 export const ListChatBot = async (req, res) => {
-    const chatbots = await listChatbotByOrg(req.organisation.id)
+    const chatbots = await listChatbotByOrg(req.organisation.id,{
+        archived: false
+    })
     return res.json(
         chatbots.map((chatbot) => ({
             id: chatbot.id,

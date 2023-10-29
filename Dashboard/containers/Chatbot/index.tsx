@@ -27,6 +27,7 @@ function ChatbotContainer({ orgId, chatbotId }: PropType) {
   const chatbotQuery = useQuery<ChatbotDetails>({
     queryKey: ['organisation', orgId, 'chatbot', chatbotId],
     queryFn: () => getChatbot({ orgId, chatbotId }),
+    refetchOnWindowFocus: false
   })
   const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
@@ -55,56 +56,61 @@ function ChatbotContainer({ orgId, chatbotId }: PropType) {
         chatbotQuery.isError &&
         !(chatbotQuery.isFetching || chatbotQuery.isLoading)
       }>
-      <section className='flex items-center justify-center w-screen h-screen px-10 bg-slate-50'>
-        <div className='flex flex-col w-full h-screen py-10 max-w-container'>
-          <div className='sticky top-0 flex items-center justify-between w-full pb-5 border-b-2'>
-            <div className='flex items-center gap-5'>
-              <ToolTip text='Go back to Chatbot listings.' position='TOP'>
-                <Button
-                  color='none'
-                  className='btn-circle'
-                  onClick={() => {
-                    router.push(`/dashboard/organisation/${orgId}`)
-                  }}>
-                  <ArrowLeft className='w-4 h-4' />
-                </Button>
-              </ToolTip>
-              <Typography.Heading
-                size='5xl'
-                boldness={700}
-                fontFamily='manrope'
-                variant='h1'
-                className='text-slate-950'>
-                {chatbotQuery.data?.name}
-              </Typography.Heading>
-              <div className='flex gap-2'>
-                <div className='badge badge-outline text-xxs'>SETTINGS</div>
-                {chatbotQuery.data?.active ? (
-                  <div className='text-white badge badge-success text-xxs'>
-                    ACTIVE
-                  </div>
-                ) : (
-                  <div className='badge badge-neutral text-xxs'>DISABLED</div>
-                )}
+      {chatbotQuery.data && (
+        <section className='flex items-center justify-center w-screen h-screen px-10 bg-slate-50'>
+          <div className='flex flex-col w-full h-screen py-10 max-w-container'>
+            <div className='sticky top-0 flex items-center justify-between w-full pb-5 border-b-2'>
+              <div className='flex items-center gap-5'>
+                <ToolTip text='Go back to Chatbot listings.' position='TOP'>
+                  <Button
+                    color='none'
+                    className='btn-circle'
+                    onClick={() => {
+                      router.push(`/dashboard/organisation/${orgId}`)
+                    }}>
+                    <ArrowLeft className='w-4 h-4' />
+                  </Button>
+                </ToolTip>
+                <Typography.Heading
+                  size='5xl'
+                  boldness={700}
+                  fontFamily='manrope'
+                  variant='h1'
+                  className='text-slate-950'>
+                  {chatbotQuery.data?.name}
+                </Typography.Heading>
+                <div className='flex gap-2'>
+                  <div className='badge badge-outline text-xxs'>SETTINGS</div>
+                  {chatbotQuery.data?.active ? (
+                    <div className='text-white badge badge-success text-xxs'>
+                      ACTIVE
+                    </div>
+                  ) : (
+                    <div className='badge badge-neutral text-xxs'>DISABLED</div>
+                  )}
+                </div>
+              </div>
+              <div className='flex items-center gap-2'>
+                <ChatbotTogglingSwitch
+                  onClick={async (active) => {
+                    await updateChatbotHandler({
+                      active,
+                    })
+                  }}
+                  checked={chatbotQuery.data?.active}
+                />
               </div>
             </div>
-            <div className='flex items-center gap-2'>
-              <ChatbotTogglingSwitch
-                onClick={async (active) => {
-                  await updateChatbotHandler({
-                    active,
-                  })
-                }}
-                checked={chatbotQuery.data?.active}
+            <div className='flex flex-1 gap-5 p-5 overflow-y-scroll'>
+              <Settings chatbot={chatbotQuery.data} orgId={orgId} />
+              <CodeSnippets
+                headCode={`<script type="module" crossorigin src="${CHATFRONT_BUNDLE}"><script/>`}
+                bodyCode={`<chat-front identifier="${chatbotQuery.data?.key}"></chat-front>`}
               />
             </div>
           </div>
-          <div className='flex flex-1 gap-5 p-5 overflow-y-scroll'>
-            <Settings chatbot={chatbotQuery.data} orgId={orgId}/>
-            <CodeSnippets headCode={`<script type="module" crossorigin src="${CHATFRONT_BUNDLE}"><script/>`} bodyCode={`<chat-front identifier="${chatbotQuery.data?.key}"></chat-front>`}/>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
       <section
         className={classNames(
           'absolute top-0 left-0 flex items-center justify-center w-screen h-screen bg-black/20',

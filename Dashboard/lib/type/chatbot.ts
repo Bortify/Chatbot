@@ -1,3 +1,5 @@
+import { knowledgeSourceStatus } from "@/constants/knowledgeSource"
+
 export type ChatbotType = {
   name?: string
   active?: boolean
@@ -31,6 +33,7 @@ export type ChatbotDetails = {
         archived: boolean
         type: 'SITE'
         indexIds: Array<string>
+        status: keyof typeof knowledgeSourceStatus
       }
     ]
   }

@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server'
 
 type PropType = {
   params: {
-    chatbotId: number
-    orgId: number
+    chatbotId: string
+    orgId: string
   }
 }
 

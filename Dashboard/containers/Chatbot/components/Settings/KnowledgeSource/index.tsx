@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import Typography from '@/components/Typography'
 import { ChatbotDetails } from '@/lib/type/chatbot'
@@ -9,14 +9,17 @@ import ToolTip from '@/components/Tooltip'
 import Spinner from '@/components/Spinner'
 import classNames from 'classnames'
 import KnowledgeSourceModal from '@/components/KnowledgeSourceModal'
+import { getKnowledgeStatus } from '@/app/api/browser/knowledge'
+import { knowledgeSourceStatus } from '@/constants/knowledgeSource'
+import { useKnowledgeSource } from './hooks/useKnowledgeSource'
 
 type PropTypes = {
-  knowledgeSources?: ChatbotDetails['knowledgeBase']['knowledgeSource']['0'][]
-  orgId?: number
-  chatbotId?: number
+  knowledgeSources: ChatbotDetails['knowledgeBase']['knowledgeSource']['0'][]
+  orgId: number
+  chatbotId: number
 }
 
-function  KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
+function KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false)
   return (
     <>
@@ -33,7 +36,11 @@ function  KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
           <span className='flex items-center justify-center p-5 font-semibold text-gray-950 alert alert-warning'>
             <AlertCircle className='w-6 h-6' />
             {`You don't have any Knowledge Source as of now`}{' '}
-            <span className='font-bold underline cursor-pointer' onClick={()=>{ setCreateModalVisible(true) }}>
+            <span
+              className='font-bold underline cursor-pointer'
+              onClick={() => {
+                setCreateModalVisible(true)
+              }}>
               Create One Here
             </span>
           </span>
@@ -41,9 +48,18 @@ function  KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
         {knowledgeSources?.length !== 0 && (
           <div className='flex flex-col gap-3'>
             {knowledgeSources?.map((entry) => (
-              <KnowledgeSourceEntry knowledgeSource={entry} key={entry.id} />
+              <KnowledgeSourceEntry
+                knowledgeSource={entry}
+                key={entry.id}
+                orgId={orgId}
+                chatbotId={chatbotId}
+              />
             ))}
-            <Button block onClick={()=>{ setCreateModalVisible(true) }}>
+            <Button
+              block
+              onClick={() => {
+                setCreateModalVisible(true)
+              }}>
               Create <PlusIcon className='w-4 h-4' />
             </Button>
           </div>
@@ -62,18 +78,12 @@ function  KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
 
 export default KnowledgeSource
 
-function KnowledgeSourceEntry({
-  knowledgeSource,
-}: {
+function KnowledgeSourceEntry(props: {
   knowledgeSource: ChatbotDetails['knowledgeBase']['knowledgeSource']['0']
+  orgId: number
+  chatbotId: number
 }) {
-  const [status, setStatus] = useState<
-    'ACTIVE' | 'ERROR' | 'PROCESSING' | 'LOADING'
-  >('LOADING')
-
-  useEffect(()=>{
-    setStatus('ACTIVE')
-  },[])
+  const { status, knowledgeSource } = useKnowledgeSource(props)
 
   return (
     <div className='rounded-xl bg-base-200/50'>
@@ -87,14 +97,20 @@ function KnowledgeSourceEntry({
             className='text-accent-content'>
             {knowledgeSource.name}
           </Typography.Heading>
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-1'>
             <span
-              className={classNames('block w-3 h-3 rounded-full', {
-                'bg-yellow-500': status === 'PROCESSING',
-                'bg-green-500': status === 'ACTIVE',
-                'bg-red-500': status === 'ERROR',
-              })}
-            />
+              className={classNames(
+                'font-semibold text-xxs font-nunito badge text-white',
+                {
+                  'badge-success': status === 'SUCCEED',
+                  'badge-error': status === 'ERROR',
+                  'badge-warning': status === 'PROCESSING',
+                }
+              )}>
+              {status === 'ERROR' && 'Failed'}
+              {status === 'PROCESSING' && 'Training'}
+              {status === 'SUCCEED' && 'Active'}
+            </span>
           </div>
         </div>
         <div className='flex items-center justify-center gap-2'>
@@ -112,11 +128,6 @@ function KnowledgeSourceEntry({
             </Button>
           </ToolTip>
         </div>
-        {status === 'LOADING' && (
-          <div className='absolute top-0 left-0 grid w-full h-full rounded-xl backdrop-blur-2xl place-items-center'>
-            <Spinner />
-          </div>
-        )}
       </div>
     </div>
   )

@@ -19,8 +19,13 @@ module.exports = {
         container: '1400px',
       },
       maxHeight: {
-        container: '600px'
-      }
+        container: '600px',
+      },
+    },
+    fontFamily: {
+      poppins: 'var(--font-poppins)',
+      manrope: 'var(--font-manrope)',
+      nunito: 'var(--font-nunito)',
     },
   },
   daisyui: {

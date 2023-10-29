@@ -9,8 +9,7 @@ import {
     GetKnowledgeSource,
     ArchiveChatbot,
     ArchiveKnowledgeSource,
-    UpdatingKnowledgeSourceStatusProvider,
-    CreatingKnowledgeSourceStatusProvider,
+    KnowledgeSourceStatusProvider,
     ListChatBot,
 } from '../controller/chatbot.js'
 import { attachChatbotMiddleware } from '../middleware/chatbot.js'
@@ -50,16 +49,10 @@ chatbotRouter.delete(
 
 // status for data stream jobs.
 chatbotRouter.get(
-    '/:chatbotId/data/:knowledgeSourceId/status/update',
+    '/:chatbotId/data/:knowledgeSourceId/status',
     attachChatbotMiddleware,
     attachKnowloedgeSource,
-    UpdatingKnowledgeSourceStatusProvider
-)
-chatbotRouter.get(
-    '/:chatbotId/data/:knowledgeSourceId/status/create',
-    attachChatbotMiddleware,
-    attachKnowloedgeSource,
-    CreatingKnowledgeSourceStatusProvider
+    KnowledgeSourceStatusProvider
 )
 
 export default chatbotRouter

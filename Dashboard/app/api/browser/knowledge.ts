@@ -1,4 +1,5 @@
 import { KnowledgeSource } from '@/lib/type/chatbot'
+import { knowledgeSourceStatus } from '@/constants/knowledgeSource'
 import browserApi from '.'
 
 export async function createKnowledgeSource({
@@ -9,7 +10,7 @@ export async function createKnowledgeSource({
   orgId?: number
   chatbotId?: number
   payload: KnowledgeSource
-}) {
+}): Promise<void> {
   if (!orgId || !chatbotId) {
     throw new Error(`id's must must provided`)
   }
@@ -18,6 +19,27 @@ export async function createKnowledgeSource({
     {
       method: 'POST',
       body: payload,
+    }
+  )
+}
+
+export async function getKnowledgeStatus({
+  chatbotId,
+  knowledgeId,
+  orgId,
+}: {
+  chatbotId: number
+  knowledgeId: number
+  orgId: number
+}): Promise<{
+  status: keyof typeof knowledgeSourceStatus
+  code: string
+}> {
+  return browserApi(
+    `/api/organisation/${orgId}/chatbot/${chatbotId}/knowledgeSource/${knowledgeId}`,
+    {
+      method: 'GET',
+      body: null,
     }
   )
 }
