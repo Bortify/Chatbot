@@ -14,7 +14,7 @@ const Providers: React.FC<{
     <QueryClientProvider client={qClient}>
       <SessionProvider>{children}</SessionProvider>
       {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools client={qClient} />
+        <ReactQueryDevtools client={qClient} buttonPosition='bottom-left' />
       )}
     </QueryClientProvider>
   )
