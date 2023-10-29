@@ -1,17 +1,24 @@
 'use client'
 import React, { useCallback, useEffect, useState } from 'react'
+import classNames from 'classnames'
+import {
+  AlertCircle,
+  Delete,
+  LucideFolderEdit,
+  PlusIcon,
+  Trash2,
+} from 'lucide-react'
 
 import Typography from '@/components/Typography'
 import { ChatbotDetails } from '@/lib/type/chatbot'
-import { AlertCircle, LucideFolderEdit, PlusIcon, Trash2 } from 'lucide-react'
 import Button from '@/components/Button'
 import ToolTip from '@/components/Tooltip'
-import Spinner from '@/components/Spinner'
-import classNames from 'classnames'
 import KnowledgeSourceModal from '@/components/KnowledgeSourceModal'
-import { getKnowledgeStatus } from '@/app/api/browser/knowledge'
-import { knowledgeSourceStatus } from '@/constants/knowledgeSource'
+import DeleteConfirmation from '@/components/DeleteConfirmation'
+
 import { useKnowledgeSource } from './hooks/useKnowledgeSource'
+import { deleteKnowledgeSource } from '@/app/api/browser/knowledge'
+import { invalidate } from '@/utils/query'
 
 type PropTypes = {
   knowledgeSources: ChatbotDetails['knowledgeBase']['knowledgeSource']['0'][]
@@ -84,51 +91,79 @@ function KnowledgeSourceEntry(props: {
   chatbotId: number
 }) {
   const { status, knowledgeSource } = useKnowledgeSource(props)
-
+  const [deleteModalVisible, setDeleteModalVsibility] = useState<boolean>(false)
   return (
-    <div className='rounded-xl bg-base-200/50'>
-      <div className='relative flex items-center justify-between collapse-title'>
-        <div className='flex items-center justify-center gap-5'>
-          <Typography.Heading
-            variant='h4'
-            size='base'
-            boldness={600}
-            fontFamily='manrope'
-            className='text-accent-content'>
-            {knowledgeSource.name}
-          </Typography.Heading>
-          <div className='flex items-center gap-1'>
-            <span
-              className={classNames(
-                'font-semibold text-xxs font-nunito badge text-white',
-                {
-                  'badge-success': status === 'SUCCEED',
-                  'badge-error': status === 'ERROR',
-                  'badge-warning': status === 'PROCESSING',
-                }
-              )}>
-              {status === 'ERROR' && 'Failed'}
-              {status === 'PROCESSING' && 'Training'}
-              {status === 'SUCCEED' && 'Active'}
-            </span>
+    <>
+      <div className='rounded-xl bg-base-200/50'>
+        <div className='relative flex items-center justify-between collapse-title'>
+          <div className='flex items-center justify-center gap-5'>
+            <Typography.Heading
+              variant='h4'
+              size='base'
+              boldness={600}
+              fontFamily='manrope'
+              className='text-accent-content'>
+              {knowledgeSource.name}
+            </Typography.Heading>
+            <div className='flex items-center gap-1'>
+              <span
+                className={classNames(
+                  'font-semibold text-xxs font-nunito badge text-white',
+                  {
+                    'badge-success': status === 'SUCCEED',
+                    'badge-error': status === 'ERROR',
+                    'badge-warning': status === 'PROCESSING',
+                  }
+                )}>
+                {status === 'ERROR' && 'Failed'}
+                {status === 'PROCESSING' && 'Training'}
+                {status === 'SUCCEED' && 'Active'}
+              </span>
+            </div>
+          </div>
+          <div className='flex items-center justify-center gap-2'>
+            {/* <ToolTip position='LEFT' text='Edit'>
+              <Button
+                size='small'
+                color='ghost'
+                className='btn-circle bg-base-300'>
+                <LucideFolderEdit className='w-4 h-4' />
+              </Button>
+            </ToolTip> */}
+            <ToolTip position='RIGHT' text='Delete'>
+              <Button
+                size='small'
+                state='error'
+                className='btn-circle'
+                onClick={() => {
+                  setDeleteModalVsibility(true)
+                }}>
+                <Trash2 className='w-4 h-4' />
+              </Button>
+            </ToolTip>
           </div>
         </div>
-        <div className='flex items-center justify-center gap-2'>
-          <ToolTip position='LEFT' text='Edit'>
-            <Button
-              size='small'
-              color='ghost'
-              className='btn-circle bg-base-300'>
-              <LucideFolderEdit className='w-4 h-4' />
-            </Button>
-          </ToolTip>
-          <ToolTip position='RIGHT' text='Delete'>
-            <Button size='small' state='error' className='btn-circle'>
-              <Trash2 className='w-4 h-4' />
-            </Button>
-          </ToolTip>
-        </div>
       </div>
-    </div>
+      <DeleteConfirmation
+        active={deleteModalVisible}
+        visibilityDispatcher={setDeleteModalVsibility}
+        matcher={`Delete ${knowledgeSource.name}`}
+        onConfirm={async () => {
+          await deleteKnowledgeSource({
+            chatbotId: props.chatbotId,
+            knowledgeId: knowledgeSource.id,
+            orgId: props.orgId,
+          })
+          invalidate([
+            'organisation',
+            props.orgId,
+            'chatbot',
+            props.chatbotId,
+          ])
+        }}
+        title='Delete Knowledge Source'
+        text={`Your chatbot will not longer be able to answer queries related to knowledge base ${knowledgeSource.name}. Are you sure sure about deleting it?`}
+      />
+    </>
   )
 }

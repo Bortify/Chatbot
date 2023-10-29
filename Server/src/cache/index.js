@@ -4,6 +4,7 @@ import { Redis } from '../config.js'
 
 const redisClient = createClient({
     url: `redis://${Redis.USERNAME}:${Redis.PASSWORD}@${Redis.URL}`,
+    pingInterval: 10 * 60 * 60 * 1000 // 10 min
 })
 
 await redisClient.connect()

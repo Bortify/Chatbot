@@ -43,3 +43,21 @@ export async function getKnowledgeStatus({
     }
   )
 }
+
+export async function deleteKnowledgeSource({
+  chatbotId,
+  knowledgeId,
+  orgId,
+}: {
+  chatbotId: number
+  knowledgeId: number
+  orgId: number
+}): Promise<void> {
+  return browserApi(
+    `/api/organisation/${orgId}/chatbot/${chatbotId}/knowledgeSource/${knowledgeId}`,
+    {
+      method: 'DELETE',
+      body: null,
+    }
+  )
+}

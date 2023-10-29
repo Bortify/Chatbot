@@ -45,7 +45,11 @@ export const findChatbotById = (chatbotId, filter = {}) => {
         include: {
             knowledgeBase: {
                 include: {
-                    knowledgeSource: true,
+                    knowledgeSource: {
+                        where: {
+                            archived: false
+                        }
+                    },
                 },
             },
         },

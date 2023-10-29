@@ -21,7 +21,10 @@ export const attachKnowloedgeSource = async (req, res, next) => {
 
     if (!knowledgeSource) {
         return res.status(404).json({
-            error: 'knowledge source not found',
+            errors: [{
+                message: 'knowledge source not found',
+                path: ['chatbot']
+            }],
         })
     }
 

@@ -39,7 +39,6 @@ export const getChatResponses = async (
 }
 
 export const getSummary = async (identifier, messages) => {
-    console.log('messages with no summary', messages)
     const summaryPrompt = await getPromptTemplate('chatbot:summary')
     const res = await OpenAI.chat.completions.create({
         messages: [
@@ -63,10 +62,6 @@ export const getSummary = async (identifier, messages) => {
 }
 
 export const mergeSummary = async ({ prevSummary, currentSummary }) => {
-    console.log({
-        currentSummary,
-        prevSummary,
-    })
     const mergeSummaryTemplate = await getPromptTemplate(
         'chatbot:summary:merge'
     )

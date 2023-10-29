@@ -136,7 +136,6 @@ export const GetChatbotDetails = async (req, res) => {
     const chatbot = req.chatbot
     chatbot.knowledgeBase.knowledgeSource = await Promise.all(
         chatbot.knowledgeBase.knowledgeSource.map(async (data) => {
-            console.log(data)
             const CACHING_KEY = `knowledgeSource-${data.id}`
             const dataFromCache = await getDataFromCache(CACHING_KEY)
             data.status = dataFromCache.status

@@ -56,10 +56,10 @@ function DeleteConfirmation({
         size='sm'
         className='mb-3 text-slate-800'>
         Type{' '}
-        <code className='px-2 py-0.5 font-black text-black bg-gray-200'>
+        <code className='px-1 py-0.5 font-black text-black bg-gray-200'>
           {matcher}
         </code>{' '}
-        in the field below
+        in the field below to continue.
       </Typography.Content>
       <Form.Field.Input
         placeholder={matcher}

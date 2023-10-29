@@ -22,16 +22,20 @@ export function useKnowledgeSource({
 
   useEffect(() => {
     const fetchStatus = async () => {
-      const res = await getKnowledgeStatus({
-        knowledgeId: knowledgeSource.id,
-        chatbotId,
-        orgId,
-      })
-      setStatus(res.status)
-      if (res.status !== 'PROCESSING') {
+      try{
+        const res = await getKnowledgeStatus({
+          knowledgeId: knowledgeSource.id,
+          chatbotId,
+          orgId,
+        })
+        setStatus(res.status)
+        if (res.status !== 'PROCESSING') {
+          setIsPollingEnabled(false)
+        }
+      } catch(e){
+        console.log(e)
         setIsPollingEnabled(false)
       }
-      console.log([knowledgeSource.id,res.status])
     }
 
     const startPolling = () => {
