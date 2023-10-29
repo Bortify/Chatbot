@@ -50,6 +50,7 @@ const LoginForm: React.FC<{}> = () => {
       if (res?.error) {
         throw new APIError(JSON.parse(res.error))
       }
+      router.push('/dashboard')
     } catch (e) {
       if (e instanceof APIError) {
         if (e.status === 404) {
