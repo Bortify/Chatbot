@@ -1,21 +1,17 @@
 'use client'
 
-import greetingTime from 'greeting-time'
 import { signOut } from 'next-auth/react'
 import { LogOut } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 
 import Typography from '@/components/Typography'
 import Button from '@/components/Button'
-import ProfileModal from '@/components/ProfileModal'
 import { getProfile } from '@/app/api/browser/auth'
 import WaitForData from '@/components/WaitForData'
 
 import OrganisationsList from './components/OrganisationsList'
 
 const Home: React.FC<{}> = () => {
-  const greeting = greetingTime(new Date())
-  
   const profileQuery = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
@@ -33,7 +29,7 @@ const Home: React.FC<{}> = () => {
                 fontFamily='manrope'
                 variant='h1'
                 className='text-slate-700'>
-                {greeting}
+                Hello
                 {', '}
                 <span className='text-5xl font-bold text-black'>
                   {profileQuery.data?.name}

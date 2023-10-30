@@ -67,7 +67,7 @@ export const authOptions: AuthOptions = {
       token,
       user,
     }: {
-      session: Session & { token: string | undefined }
+      session: Session
       token: JWT
       user: AdapterUser
     }) {

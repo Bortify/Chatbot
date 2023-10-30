@@ -2,6 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import classNames from 'classnames'
+import NextTopLoader from 'nextjs-toploader'
 
 import Toaster from '@/components/Toaster'
 import { fontVariables } from '@/components/Typography/Font'
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={classNames(inter.className, fontVariables)}>
+        <NextTopLoader color='#570DF8' height={5}/>
         {children}
         <Toaster position='top-center' reverseOrder={false} />
       </body>
