@@ -22,6 +22,10 @@ app.use(Express.json())
 app.use(cookieParser())
 app.use(appRouter)
 
+app.get('/', (req, res) => {
+    res.send('Server is alive baby!!')
+})
+
 const server = createServer(app)
 const io = new Server(server, {
     cors: {
