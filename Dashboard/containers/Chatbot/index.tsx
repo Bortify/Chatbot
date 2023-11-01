@@ -13,7 +13,7 @@ import { ChatbotDetails, ChatbotType } from '@/lib/type/chatbot'
 import { invalidate } from '@/utils/query'
 import Spinner from '@/components/Spinner'
 import ToolTip from '@/components/Tooltip'
-import { CHATFRONT_BUNDLE } from '@/constants/url'
+import { CHATFRONT_BUNDLE_URL } from '@/constants/url'
 
 import Settings from './components/Settings'
 import CodeSnippets from './components/CodeSnippets'
@@ -27,7 +27,7 @@ function ChatbotContainer({ orgId, chatbotId }: PropType) {
   const chatbotQuery = useQuery<ChatbotDetails>({
     queryKey: ['organisation', orgId, 'chatbot', chatbotId],
     queryFn: () => getChatbot({ orgId, chatbotId }),
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
   })
   const [loading, setLoading] = useState<boolean>(false)
   const router = useRouter()
@@ -104,8 +104,9 @@ function ChatbotContainer({ orgId, chatbotId }: PropType) {
             <div className='flex flex-1 gap-5 p-5 overflow-y-scroll'>
               <Settings chatbot={chatbotQuery.data} orgId={orgId} />
               <CodeSnippets
-                headCode={`<script type="module" crossorigin src="${CHATFRONT_BUNDLE}"><script/>`}
+                jsCode={`<script type="module" crossorigin src="${CHATFRONT_BUNDLE_URL}/syro.js"><script/>`}
                 bodyCode={`<chat-front identifier="${chatbotQuery.data?.key}"></chat-front>`}
+                cssCode={`<link rel="stylesheet" href="${CHATFRONT_BUNDLE_URL}/syro.css">`}
               />
             </div>
           </div>

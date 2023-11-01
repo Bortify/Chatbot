@@ -3,29 +3,46 @@ import { Copy, CopyCheck } from 'lucide-react'
 import React, { useState } from 'react'
 
 function CodeSnippets({
-  headCode,
+  jsCode,
+  cssCode,
   bodyCode,
 }: {
-  headCode: string
+  jsCode: string
   bodyCode: string
+  cssCode: string
 }) {
   return (
     <div className='sticky top-0 w-2/5 pt-10'>
-      <Typography.Heading size='4xl' variant='h2' boldness={700} fontFamily='poppins' className='mb-3 text-gray-700'>Steps To Integrate</Typography.Heading>
+      <Typography.Heading
+        size='4xl'
+        variant='h2'
+        boldness={700}
+        fontFamily='poppins'
+        className='mb-3 text-gray-700'>
+        Steps To Integrate
+      </Typography.Heading>
       <Typography.Content
         size='sm'
         boldness={500}
         fontFamily='poppins'
         className='mb-2 text-gray-500'>
-        1. Add below code snippet to head of your HTML or JSX source code.
+        1. Add below JS script to head of your HTML or JSX source code.
       </Typography.Content>
-      <Snippet code={headCode} />
+      <Snippet code={jsCode} />
       <Typography.Content
         size='sm'
         boldness={500}
         fontFamily='poppins'
         className='mt-4 mb-2 text-gray-500'>
-        2. Add below code snippet to body of your HTML or JSX source code.
+        2. Add below CSS to head of your HTML or JSX source code.
+      </Typography.Content>
+      <Snippet code={cssCode} />
+      <Typography.Content
+        size='sm'
+        boldness={500}
+        fontFamily='poppins'
+        className='mt-4 mb-2 text-gray-500'>
+        3. Add below code snippet to body of your HTML or JSX source code.
       </Typography.Content>
       <Snippet code={bodyCode} />
     </div>
