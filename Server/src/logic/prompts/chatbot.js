@@ -3,7 +3,7 @@ import { createTextFromTemplate } from '../../utils/prompt.js'
 export const chatbotResponse = (inputVariableObject) => {
     const inputVariables = ['context', 'query', 'errorText']
     const template = `Context is "{context}". You have to answer this "{query}". 
-         Create small and to the point answers. Use markdown for answering. If you don't know, just say "{errorText}"`
+         Create small and to the point answers. Use markdown for answering. If you don't know, just say "{errorText}".`
     return createTextFromTemplate(template, inputVariables, inputVariableObject)
 }
 
@@ -21,6 +21,7 @@ export const chatbotResponseWithHistory = (inputVariableObject) => {
 export const personality = () => {
     const template = `
             You are a friendly chatbot. User has some queries. Answer them politely.
-            Responses generated should be short and to the point. Use Markdown for answering.`
+            Responses generated should be short and to the point. Use Markdown for answering. 
+            You have to Answer in user's language`
     return template
 }

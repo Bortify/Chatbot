@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import { v4 as uuid } from 'uuid'
 
@@ -7,6 +7,8 @@ import { LAST_CHATID_STORAGE_KEY } from '../constants/keys'
 import { BACKEND_URL } from '../config'
 import { useQuery } from '@tanstack/react-query'
 import { getMessages } from '../api/messages'
+import { ChatbotConfiguration } from '../types/chatbot'
+import { chatDetailsUtil } from '../utils/localStorage'
 
 export interface ChatProp {
   content: string
@@ -30,9 +32,13 @@ export default function useBot({ identifier }: { identifier: string }) {
   const [chat, setChat] = useState<ChatProp[]>([])
   const [isServerIdle, setIsServerIdle] = useState<boolean>(true)
   const [chatbotEnabled, setChatbotEnabled] = useState<boolean>(false)
+  const [chatbotConfiguration, setConfiguration] =
+    useState<ChatbotConfiguration | null>(null)
   const messageQuery = useQuery(['messages', chatId], (key) =>
-    getMessages(key.queryKey[1])
+    getMessages(key.queryKey[1], identifier)
   )
+  const userMsgCountRef = useRef(0)
+  const [msgLimitExceeded, setMsgLimitExceeded] = useState(false)
 
   useEffect(() => {
     socket?.on('message', (data: MessageEventProp) => {
@@ -47,7 +53,10 @@ export default function useBot({ identifier }: { identifier: string }) {
     socket?.on('connect', () => {
       setChatbotEnabled(true)
     })
-  }, [isServerIdle, chat, identifier, chatId,socket])
+    socket?.on('configuration', (data: ChatbotConfiguration) => {
+      setConfiguration(data)
+    })
+  }, [isServerIdle, chat, identifier, chatId, socket])
 
   useEffect(() => {
     const socketInit = createSocket(BACKEND_URL, {
@@ -56,7 +65,7 @@ export default function useBot({ identifier }: { identifier: string }) {
     })
     socketInit.connect()
     setSocket(socketInit)
-    return ()=>{
+    return () => {
       socketInit.disconnect()
     }
   }, [identifier, chatId])
@@ -88,8 +97,40 @@ export default function useBot({ identifier }: { identifier: string }) {
       timestamp: new Date(),
       id: Math.random() * 100000,
     }
+    userMsgCountRef.current += 1
+    chatDetailsUtil('UPDATE_COUNT',{
+      msgCount: userMsgCountRef.current
+    })
+    checkMsgLimit()
     setChat([...chat, newChat])
   }
+
+  const checkMsgLimit = useCallback(() => {
+    if (chatbotConfiguration) {
+      if (userMsgCountRef.current >= chatbotConfiguration.maxUserMsgAllowed) {
+        setMsgLimitExceeded(true)
+      }
+    }
+  },[chatbotConfiguration])
+
+  useEffect(() => {
+    const savedDetails = chatDetailsUtil('UPSERT')
+    if (!savedDetails) return
+    const { lastUpdatedAt, msgCount } = savedDetails
+    const currentDate = new Date()
+    const expiry = new Date(lastUpdatedAt || new Date())
+    expiry.setDate(expiry.getDate() + 1)
+    if (expiry > currentDate) {
+      userMsgCountRef.current = msgCount
+      checkMsgLimit()
+    } else {
+      userMsgCountRef.current = 0
+      chatDetailsUtil('SET', {
+        msgCount: 0,
+        lastUpdatedAt: new Date(),
+      })
+    }
+  }, [chatbotConfiguration,checkMsgLimit])
 
   return {
     loading: messageQuery.isLoading,
@@ -97,6 +138,8 @@ export default function useBot({ identifier }: { identifier: string }) {
     isServerIdle,
     chatbotEnabled,
     sendMessage,
+    configuration: chatbotConfiguration,
+    msgLimitExceeded,
   }
 }
 

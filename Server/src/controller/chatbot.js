@@ -13,15 +13,12 @@ import {
 import eventManager from '../events/index.js'
 import { getDataFromCache } from '../cache/index.js'
 import { deleteIndex } from '../models/pinecone.js'
+import { Configuration } from '../constants/chatbot.js'
 
 export const CreateChatBot = async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(1).max(200).required(),
-        configuration: Joi.object({
-            errorText: Joi.string().default("I can't assist with you that"),
-        })
-            .optional()
-            .default({}),
+        configuration: Joi.object().optional().default(Configuration),
     })
 
     const { value, error } = schema.validate(req.body)
@@ -260,8 +257,8 @@ export const KnowledgeSourceStatusProvider = async (req, res) => {
 }
 
 export const ListChatBot = async (req, res) => {
-    const chatbots = await listChatbotByOrg(req.organisation.id,{
-        archived: false
+    const chatbots = await listChatbotByOrg(req.organisation.id, {
+        archived: false,
     })
     return res.json(
         chatbots.map((chatbot) => ({

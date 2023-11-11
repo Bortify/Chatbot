@@ -12,10 +12,10 @@ const getOnSocketConnection = (io) => (socket) => {
         conversationId: chatId,
     })
 
-    console.log('chatbot connected with name', chatId)
-
     socket.join(userChannelId)
     socket.join(statusChannelId)
+
+    io.to(userChannelId).emit('configuration', chatbot.configuration)
 
     socket.on('message', async (data) => {
         io.to(statusChannelId).emit('status', {
@@ -25,7 +25,6 @@ const getOnSocketConnection = (io) => (socket) => {
 
         try {
             const ans = await client.predict(data.message)
-            console.log('bot says', ans)
             io.to(userChannelId).emit('message', {
                 message: ans,
             })
