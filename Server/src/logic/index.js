@@ -20,7 +20,7 @@ export class Chatbot {
         )
         this.chatbot = chatbot
         this.indexName = indexName
-        this.messages = (await getMessages(this.conversation.id)).map(
+        this.messages = (await getMessages(this.conversation.id,{},5)).map(
             ({ content, author }) => ({
                 content,
                 author,

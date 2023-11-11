@@ -33,7 +33,7 @@ export const updateSummary = (conversationId, chatbotId, summary) =>
         },
     })
 
-export const getMessages = (conversationId, filter = {}) =>
+export const getMessages = (conversationId, filter = {}, take = 10) =>
     prisma.message.findMany({
         where: {
             conversationId,
@@ -42,6 +42,7 @@ export const getMessages = (conversationId, filter = {}) =>
         orderBy: {
             timestamp: 'asc',
         },
+        take,
     })
 
 export const getConversationById = (conversationId) =>

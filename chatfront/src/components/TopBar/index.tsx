@@ -1,4 +1,4 @@
-import { MoreVertical, Bot } from 'lucide-react'
+import { Bot } from 'lucide-react'
 import { ChatbotConfiguration } from '../../types/chatbot'
 
 export default function TopBar({
@@ -29,7 +29,7 @@ export default function TopBar({
           </div>
         </div>
       </div>
-      <MoreVertical className='p-2 duration-300 ease-in-out rounded-full cursor-pointer text-inherit w-9 h-9 hover:bg-white/20' />
+      {/* <MoreVertical className='p-2 duration-300 ease-in-out rounded-full cursor-pointer text-inherit w-9 h-9 hover:bg-white/20' /> */}
     </div>
   )
 }
