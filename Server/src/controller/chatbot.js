@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { KnowledgeType } from '@prisma/client'
+import _ from 'lodash'
 
 import {
     createChatbot,
@@ -49,7 +50,7 @@ export const CreateChatBot = async (req, res) => {
 export const UpdateChatbot = async (req, res) => {
     const schema = Joi.object({
         name: Joi.string().min(1).max(200).optional(),
-        configuration: Joi.object().optional(),
+        configuration: Joi.object().optional().default({}),
         active: Joi.boolean().optional(),
     })
 
@@ -66,10 +67,13 @@ export const UpdateChatbot = async (req, res) => {
     }
 
     let updatedChatbot = null
-
+    let { name, configuration, active } = value
+    configuration = _.merge(req.chatbot.configuration, configuration)
     try {
-        updatedChatbot = await updateChatBot(req.chatbot.id, value, {
-            archived: false,
+        updatedChatbot = await updateChatBot(req.chatbot.id, {
+            name,
+            configuration,
+            active,
         })
     } catch (e) {
         return res.status(404).json({
