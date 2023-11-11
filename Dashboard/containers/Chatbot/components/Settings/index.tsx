@@ -4,6 +4,7 @@ import { ChatbotDetails } from '@/lib/type/chatbot'
 
 import KnowledgeSource from './KnowledgeSource'
 import DangerZone from './DangerZone'
+import VisualBuilder from './VisualBuilder'
 
 function Settings({
   chatbot,
@@ -19,6 +20,7 @@ function Settings({
         orgId={orgId}
         chatbotId={chatbot.id}
       />
+      <VisualBuilder chatbot={chatbot} orgId={orgId}/>
       <DangerZone chatbot={chatbot} orgId={orgId}/>
     </div>
   )

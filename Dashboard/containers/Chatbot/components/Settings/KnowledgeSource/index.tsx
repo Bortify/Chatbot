@@ -36,7 +36,7 @@ function KnowledgeSource({ knowledgeSources, chatbotId, orgId }: PropTypes) {
           size='3xl'
           boldness={600}
           fontFamily='poppins'
-          className='pb-5 mb-5 text-gray-400 border-b-2'>
+          className='pb-5 mb-5 border-b-2 text-gray-950'>
           Knowledge Source
         </Typography.Heading>
         {knowledgeSources?.length === 0 && (

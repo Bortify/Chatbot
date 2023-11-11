@@ -9,38 +9,38 @@ export const Configuration = {
         color: {
             icon: {
                 background: '#2F2B54',
-                text: '#FFF',
+                text: '#FFFFFF',
             },
             header: {
                 background: '#2F2B54',
-                text: '#FFF',
+                text: '#FFFFFF',
             },
             typingArea: {
-                background: '#FFF',
+                background: '#FFFFFF',
                 text: '#94A3B8',
             },
             sendButton: {
                 background: '#2F2B54',
-                text: '#FFF',
+                text: '#FFFFFF',
             },
             message: {
                 user: {
                     background: '#3E3A64',
-                    text: '#FFF',
+                    text: '#FFFFFF',
                 },
                 machine: {
-                    background: '#FFF',
+                    background: '#FFFFFF',
                     text: '#3E3A64',
                 },
             },
             thinkingContainer: {
-                text: 'red',
+                text: '#000000',
             },
             body: '#F5F6F8',
         },
         iconPosition: {
-            right: '40px',
-            bottom: '32px',
+            right: 40,
+            bottom: 32,
         },
     },
     initialPrompts: [

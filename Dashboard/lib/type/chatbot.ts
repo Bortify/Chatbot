@@ -9,47 +9,11 @@ export type ChatbotType = {
   configuration?: object
 }
 
-export type ChatbotDetails = {
-  id: number
-  key: string
-  name: string
-  configuration: object
-  archived: boolean
-  active: boolean
-  organisationId: number
-  tokens: number
-  knowledgeBase: {
-    id: number
-    indexName: string
-    chatbotId: number
-    knowledgeSource: [
-      {
-        id: number
-        name: string
-        data: {
-          activeLinks: Array<string>
-        }
-        knowledgeBaseId: number
-        archived: boolean
-        type: 'SITE'
-        indexIds: Array<string>
-        status: keyof typeof knowledgeSourceStatus
-      }
-    ]
-  }
-}
-
-export type KnowledgeSource = {
-  name: string
-  hostURL: string
-  activeLinks: Array<string>
-}
-
 export type ChatbotConfiguration = {
   errorText: string
   maxUserMsgAllowed: number
   greetingMessage: string
-  limitExceedText: number
+  limitExceedText: string
   thinkingText: string
   placeholder: string
   style: {
@@ -94,4 +58,40 @@ export type ChatbotConfiguration = {
     label: string
     message: string
   }>
+}
+
+export type ChatbotDetails = {
+  id: number
+  key: string
+  name: string
+  configuration: ChatbotConfiguration
+  archived: boolean
+  active: boolean
+  organisationId: number
+  tokens: number
+  knowledgeBase: {
+    id: number
+    indexName: string
+    chatbotId: number
+    knowledgeSource: [
+      {
+        id: number
+        name: string
+        data: {
+          activeLinks: Array<string>
+        }
+        knowledgeBaseId: number
+        archived: boolean
+        type: 'SITE'
+        indexIds: Array<string>
+        status: keyof typeof knowledgeSourceStatus
+      }
+    ]
+  }
+}
+
+export type KnowledgeSource = {
+  name: string
+  hostURL: string
+  activeLinks: Array<string>
 }

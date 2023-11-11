@@ -1,3 +1,4 @@
+import ToolTip from '@/components/Tooltip'
 import Typography from '@/components/Typography'
 import { Copy, CopyCheck } from 'lucide-react'
 import React, { useState } from 'react'
@@ -74,11 +75,13 @@ function Snippet({ code }: { code: string }) {
       <span
         className='absolute text-white cursor-pointer top-4 right-4'
         onClick={copyToClipboard}>
-        {copied ? (
-          <CopyCheck className='w-5 h-5' />
-        ) : (
-          <Copy className='w-5 h-5' />
-        )}
+        <ToolTip text={copied ? 'Copied!' : 'Copy'} position='TOP'>
+          {copied ? (
+            <CopyCheck className='w-5 h-5' />
+          ) : (
+            <Copy className='w-5 h-5' />
+          )}
+        </ToolTip>
       </span>
     </div>
   )
