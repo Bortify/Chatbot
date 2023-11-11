@@ -11,20 +11,21 @@ import Button from '@/components/Button'
 import Spinner from '@/components/Spinner'
 import { ChatbotType } from '@/lib/type/chatbot'
 import Typography from '@/components/Typography'
-import { listChatbots } from '@/app/api/browser/chatbot'
+import { listChatbots } from '@/api/browser/chatbot'
 
 import Chatbot from './assets/chatbot.png'
 import ChatbotModal from '@/components/ChatbotModal'
 
 export default function ChatbotList({ orgId }: { orgId: number }) {
   const chatbotQuery = useQuery({
-    queryKey: ['organisation',orgId,'chatbots'],
+    queryKey: ['organisation', orgId, 'chatbots'],
     queryFn: () => listChatbots({ orgId }),
     refetchOnWindowFocus: false,
   })
-    
+
   const loading = chatbotQuery.isLoading || chatbotQuery.isFetching
-  const [createChatbotModalVisible, setcreateChatbotModalVisible] = useState<boolean>(false)
+  const [createChatbotModalVisible, setcreateChatbotModalVisible] =
+    useState<boolean>(false)
 
   useEffect(() => {
     gsap.fromTo(
@@ -89,7 +90,12 @@ export default function ChatbotList({ orgId }: { orgId: number }) {
           </div>
         )}
       </div>
-      <ChatbotModal active={createChatbotModalVisible} visibilityDispatcher={setcreateChatbotModalVisible} type='CREATE' orgId={orgId}/>
+      <ChatbotModal
+        active={createChatbotModalVisible}
+        visibilityDispatcher={setcreateChatbotModalVisible}
+        type='CREATE'
+        orgId={orgId}
+      />
     </>
   )
 }
@@ -124,10 +130,13 @@ function Card({ chatbot, orgId }: { chatbot: ChatbotType; orgId: number }) {
           {chatbot.name}
         </Typography.Heading>
         <span
-          className={classNames('px-2 py-1 rounded-bl-lg absolute top-0 right-0', {
-            'bg-primary text-white': chatbot.active,
-            'bg-gray-200 text-slate-950': !chatbot.active,
-          })}>
+          className={classNames(
+            'px-2 py-1 rounded-bl-lg absolute top-0 right-0',
+            {
+              'bg-primary text-white': chatbot.active,
+              'bg-gray-200 text-slate-950': !chatbot.active,
+            }
+          )}>
           <Typography.Content size='xxs' boldness={700} fontFamily='manrope'>
             {chatbot.active ? 'Active' : 'Disabled'}
           </Typography.Content>

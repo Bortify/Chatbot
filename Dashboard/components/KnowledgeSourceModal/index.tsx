@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import { z } from 'zod'
 
 import { ModalPropType } from '@/lib/type/modal'
-import { createKnowledgeSource } from '@/app/api/browser/knowledge'
+import { createKnowledgeSource } from '@/api/browser/knowledge'
 import { invalidate } from '@/utils/query'
 
 import Modal from '../Modal'

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import serverApi from '..'
+import serverApi from '../../../api/server'
 
 export async function GET(request: NextRequest) {
   return serverApi('/auth', {

@@ -1,4 +1,4 @@
-import serverApi from '@/app/api'
+import serverApi from '@/api/server'
 import { NextRequest } from 'next/server'
 
 type PropType = {

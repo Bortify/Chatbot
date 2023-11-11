@@ -81,10 +81,13 @@ export const CreateAccount = async (req, res) => {
     })
 
     return res.status(200).json({
-        name: createdUser.name,
-        email: createdUser.email,
-        phone: createdUser?.phone || null,
-        isEmailVerified: createdUser.isEmailVerified,
+        user: {
+            name: createdUser.name,
+            email: createdUser.email,
+            phone: createdUser?.phone || null,
+            isEmailVerified: createdUser.isEmailVerified,
+        },
+        token,
     })
 }
 

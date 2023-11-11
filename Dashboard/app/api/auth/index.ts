@@ -1,4 +1,4 @@
-import serverApi from '@/app/api'
+import serverApi from '@/api/server'
 
 export function login(query: Object) {
   return serverApi('/auth/signin', {

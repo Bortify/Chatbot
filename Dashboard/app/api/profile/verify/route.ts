@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 
 import { EmailVerificationRequest } from '@/constants/profile'
 
-import serverApi from '../..'
+import serverApi from '../../../../api/server'
 
 export async function POST(request: NextRequest) {
   const { type, token, email } = await request.json()

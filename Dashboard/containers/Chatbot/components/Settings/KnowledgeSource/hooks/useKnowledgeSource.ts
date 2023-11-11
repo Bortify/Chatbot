@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { ChatbotDetails } from '@/lib/type/chatbot'
-import { getKnowledgeStatus } from '@/app/api/browser/knowledge'
+import { getKnowledgeStatus } from '@/api/browser/knowledge'
 import { knowledgeSourceStatus } from '@/constants/knowledgeSource'
 
 export function useKnowledgeSource({
@@ -22,7 +22,7 @@ export function useKnowledgeSource({
 
   useEffect(() => {
     const fetchStatus = async () => {
-      try{
+      try {
         const res = await getKnowledgeStatus({
           knowledgeId: knowledgeSource.id,
           chatbotId,
@@ -32,7 +32,7 @@ export function useKnowledgeSource({
         if (res.status !== 'PROCESSING') {
           setIsPollingEnabled(false)
         }
-      } catch(e){
+      } catch (e) {
         console.log(e)
         setIsPollingEnabled(false)
       }

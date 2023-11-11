@@ -8,7 +8,7 @@ import { useState } from 'react'
 import Form from '@/components/Form'
 import Button from '@/components/Button'
 
-import { forgotPassword } from '../api/browser/auth'
+import { forgotPassword } from '../../api/browser/auth'
 import { Check, X } from 'lucide-react'
 
 const validationSchema = z.object({

@@ -51,7 +51,7 @@ export const authOptions: AuthOptions = {
             )
           }
         }
-        console.log('result is: ', result)
+        console.log('result is ',result)
         return result
       },
     }),
@@ -60,16 +60,13 @@ export const authOptions: AuthOptions = {
     signIn: '/login',
     signOut: '/logout',
     newUser: '/signup',
+    error: '/error'
   },
   callbacks: {
     async session({
       session,
       token,
       user,
-    }: {
-      session: Session
-      token: JWT
-      user: AdapterUser
     }) {
       const sanitizedToken: {
         user?: {}

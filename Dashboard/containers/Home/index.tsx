@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import Typography from '@/components/Typography'
 import Button from '@/components/Button'
-import { getProfile } from '@/app/api/browser/auth'
+import { getProfile } from '@/api/browser/auth'
 import WaitForData from '@/components/WaitForData'
 
 import OrganisationsList from './components/OrganisationsList'

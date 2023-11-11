@@ -2,7 +2,7 @@
 
 import { notFound, useSearchParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { handleEmailVerification } from '../api/browser/auth'
+import { handleEmailVerification } from '../../api/browser/auth'
 import Spinner from '@/components/Spinner'
 import Typography from '@/components/Typography'
 
@@ -31,7 +31,7 @@ function Page() {
       }
     }
     handler()
-  },[email,token,router])
+  }, [email, token, router])
 
   return (
     <section className='grid w-screen h-screen place-items-center'>

@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 import { ArrowLeft } from 'lucide-react'
 
-import { getChatbot, updateChatbot } from '@/app/api/browser/chatbot'
+import { getChatbot, updateChatbot } from '@/api/browser/chatbot'
 import Button from '@/components/Button'
 import WaitForData from '@/components/WaitForData'
 import Typography from '@/components/Typography'

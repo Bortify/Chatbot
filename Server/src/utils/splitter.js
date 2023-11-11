@@ -1,5 +1,5 @@
 export const textSplitter = (text, { maximumChunkSize = 50 } = {}) => {
-    return text.split('.')
+    return text.split('.').filter((d)=>Boolean(d))
     const words = text.split(' ')
     const chunks = [[]]
     let currentChunkIndex = 0

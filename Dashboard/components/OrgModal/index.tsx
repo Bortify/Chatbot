@@ -9,7 +9,7 @@ import { ModalPropType } from '@/lib/type/modal'
 import {
   createOrganisation,
   updateOrganisation,
-} from '@/app/api/browser/organisation'
+} from '@/api/browser/organisation'
 import { invalidate } from '@/utils/query'
 
 import Modal from '../Modal'

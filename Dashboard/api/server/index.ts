@@ -81,7 +81,6 @@ async function handleResponse(response: Response, options: RequestOptionsType) {
     const isOk = response.ok
     if (!isOk) {
       const error = data || response
-      console.log('error in server api: ',error)
       throw new APIError({
         message: error.errors[0].message,
         status: response.status,

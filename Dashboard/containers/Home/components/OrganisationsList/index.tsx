@@ -7,7 +7,7 @@ import Link from 'next/link'
 import gsap from 'gsap'
 import { Plus } from 'lucide-react'
 
-import { listOrganisations } from '@/app/api/browser/organisation'
+import { listOrganisations } from '@/api/browser/organisation'
 import Button from '@/components/Button'
 import Spinner from '@/components/Spinner'
 import { OrganisationType } from '@/lib/type/organisation'

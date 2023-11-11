@@ -1,19 +1,22 @@
 'use client'
 import Image from 'next/image'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Check, X } from 'lucide-react'
 
 import Button from '@/components/Button'
 import Modal from '@/components/Modal'
 import Typography from '@/components/Typography'
-import { sendEmailVerification } from '@/app/api/browser/auth'
+import { getProfile, sendEmailVerification } from '@/api/browser/auth'
 
 import EmailVerificationGif from '../assets/email-verif.gif'
+import { useSession } from 'next-auth/react'
+import Spinner from '@/components/Spinner'
+import { useQuery } from '@tanstack/react-query'
 
 export default function EmailVerificationModal({
-  active,
+  children,
 }: {
-  active: boolean
+  children: ReactNode
 }) {
   const [status, setStatus] = useState<
     'IDLE' | 'LOADING' | 'ERROR' | 'SUCCESS'
@@ -30,8 +33,29 @@ export default function EmailVerificationModal({
     }
   }
 
+  const session = useSession({
+    required: true,
+  })
+
+  const profileQuery = useQuery({
+    queryKey: ['profile'],
+    queryFn: getProfile,
+  })
+
+  if (session.status === 'loading' || profileQuery.isLoading) {
+    return (
+      <div className='flex items-center justify-center w-screen h-screen'>
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (profileQuery.data?.isEmailVerified) {
+    return children
+  }
+
   return (
-    <Modal active={active} hideClose>
+    <Modal active={true} hideClose>
       <div className='flex items-center h-screen gap-5 p-10 max-h-96'>
         <Image src={EmailVerificationGif} width={300} height={300} alt='gif' />
         <div>

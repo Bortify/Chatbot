@@ -19,18 +19,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
-  const user = await getProfile()
-
-  if (!session?.user || user?.error) {
-    redirect('/login')
-  }
-
   return (
     <Providers>
-      <EmailVerification emailVerified={user?.isEmailVerified}>
-        {children}
-      </EmailVerification>
+      <EmailVerification>{children}</EmailVerification>
       <Toaster position='top-center' reverseOrder={false} />
       <div className='fixed bottom-4 right-4'>
         <a

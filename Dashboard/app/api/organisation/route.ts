@@ -1,4 +1,4 @@
-import serverApi from '..'
+import serverApi from '../../../api/server'
 
 export function GET(request: Request) {
   return serverApi('/organisation', {

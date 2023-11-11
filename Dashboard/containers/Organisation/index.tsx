@@ -7,10 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import Button from '@/components/Button'
 import Typography from '@/components/Typography'
 import WaitForData from '@/components/WaitForData'
-import {
-  deleteOrganisation,
-  getOrganisation,
-} from '@/app/api/browser/organisation'
+import { deleteOrganisation, getOrganisation } from '@/api/browser/organisation'
 import { OrganisationType } from '@/lib/type/organisation'
 import UpdateOrgModal from '@/components/OrgModal'
 

@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Modal from '../Modal'
 import Button from '../Button'
 import Form from '../Form'
-import { createChatbot } from '@/app/api/browser/chatbot'
+import { createChatbot } from '@/api/browser/chatbot'
 
 const validationSchema = z.object({
   name: z

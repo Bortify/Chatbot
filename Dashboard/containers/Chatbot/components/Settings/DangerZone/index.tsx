@@ -6,7 +6,7 @@ import Typography from '@/components/Typography'
 import Button from '@/components/Button'
 import { ChatbotDetails } from '@/lib/type/chatbot'
 import DeleteConfirmation from '@/components/DeleteConfirmation'
-import { deleteChatbot } from '@/app/api/browser/chatbot'
+import { deleteChatbot } from '@/api/browser/chatbot'
 
 type PropTypes = {
   chatbot: ChatbotDetails

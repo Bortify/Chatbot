@@ -10,7 +10,7 @@ import { Check, X } from 'lucide-react'
 
 import Form from '@/components/Form'
 import Button from '@/components/Button'
-import { forgotPasswordHandler } from '@/app/api/browser/auth'
+import { forgotPasswordHandler } from '@/api/browser/auth'
 import { APIError } from '@/lib/error'
 
 const validationSchema = z

@@ -17,7 +17,7 @@ import KnowledgeSourceModal from '@/components/KnowledgeSourceModal'
 import DeleteConfirmation from '@/components/DeleteConfirmation'
 
 import { useKnowledgeSource } from './hooks/useKnowledgeSource'
-import { deleteKnowledgeSource } from '@/app/api/browser/knowledge'
+import { deleteKnowledgeSource } from '@/api/browser/knowledge'
 import { invalidate } from '@/utils/query'
 
 type PropTypes = {
@@ -154,12 +154,7 @@ function KnowledgeSourceEntry(props: {
             knowledgeId: knowledgeSource.id,
             orgId: props.orgId,
           })
-          invalidate([
-            'organisation',
-            props.orgId,
-            'chatbot',
-            props.chatbotId,
-          ])
+          invalidate(['organisation', props.orgId, 'chatbot', props.chatbotId])
         }}
         title='Delete Knowledge Source'
         text={`Your chatbot will not longer be able to answer queries related to knowledge base ${knowledgeSource.name}. Are you sure sure about deleting it?`}
