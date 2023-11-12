@@ -1,14 +1,21 @@
 'use client'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React, { useRef, useState } from 'react'
 
 import Button from '@/components/Button'
 import ToolTip from '@/components/Tooltip'
 import Typography from '@/components/Typography'
 import { ChatbotConfiguration, ChatbotDetails } from '@/lib/type/chatbot'
-import React, { useEffect, useState } from 'react'
+import { builderFormSchema } from '@/lib/schema/builder'
+import { BuilderFormType } from '@/lib/type/builder'
+
 import Preview from './Preview'
 import BuilderForm from './BuilderForm'
+import { updateChatbot } from '@/api/browser/chatbot'
 
 type PropType = {
   orgId: number
@@ -16,11 +23,20 @@ type PropType = {
 }
 
 function VisualBuilderContainer({ orgId, chatbot }: PropType) {
+  const defaultConfigRef = useRef<ChatbotConfiguration>({
+    ...chatbot.configuration,
+  })
   const router = useRouter()
   const [configurations, setConfigurations] = useState<ChatbotConfiguration>(
     chatbot.configuration
   )
   const [render, setRender] = useState(false)
+  const form = useForm<BuilderFormType>({
+    resolver: zodResolver(builderFormSchema),
+    defaultValues: chatbot.configuration,
+  })
+  const [formSubmitting, setSubmiting] = useState<boolean>(false)
+  const builderFormRef = useRef<HTMLFormElement>(null)
 
   const reRender = function () {
     setRender(!render)
@@ -29,6 +45,25 @@ function VisualBuilderContainer({ orgId, chatbot }: PropType) {
   function updateConfiguration(data: ChatbotConfiguration) {
     setConfigurations(data)
     reRender()
+  }
+
+  function submitForm() {
+    if (builderFormRef.current) {
+      builderFormRef.current.requestSubmit()
+    }
+  }
+
+  async function submitHandler(data: ChatbotConfiguration): Promise<void> {
+    setSubmiting(true)
+    await updateChatbot({
+      orgId,
+      chatbotId: chatbot.id,
+      payload: {
+        configuration: data,
+      },
+    })
+    setSubmiting(false)
+    router.refresh()
   }
 
   return (
@@ -56,16 +91,35 @@ function VisualBuilderContainer({ orgId, chatbot }: PropType) {
               boldness={700}
               fontFamily='manrope'
               variant='h1'
-              className='text-slate-950'>
+              className=' text-slate-950'>
               {chatbot.name}
             </Typography.Heading>
+            <div className='absolute right-0 flex gap-3'>
+              <Button
+                onClick={() => {
+                  router.refresh()
+                  window.location.reload()
+                }}
+                color='ghost'>
+                Reset Form
+              </Button>
+              <Button
+                onClick={submitForm}
+                color='primary'
+                loading={formSubmitting}>
+                Save Changes
+              </Button>
+            </div>
           </div>
         </div>
         <div className='flex flex-1 h-0 gap-5 mt-5'>
           <div className='flex flex-1 overflow-y-scroll'>
             <BuilderForm
+              form={form}
               configurations={configurations}
               updateFunction={updateConfiguration}
+              ref={builderFormRef}
+              submitHandler={submitHandler}
             />
           </div>
           <div className='flex flex-1'>

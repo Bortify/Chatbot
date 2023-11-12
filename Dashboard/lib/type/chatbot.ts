@@ -1,12 +1,9 @@
 import { knowledgeSourceStatus } from "@/constants/knowledgeSource"
 
 export type ChatbotType = {
-  name?: string
-  active?: boolean
-  id?: number
-  key?: string
-  tokens?: number
-  configuration?: object
+  name?: ChatbotDetails['name']
+  active?: ChatbotDetails['active']
+  configuration?: ChatbotConfiguration
 }
 
 export type ChatbotConfiguration = {
@@ -50,8 +47,8 @@ export type ChatbotConfiguration = {
       body: string
     }
     iconPosition: {
-      right: string
-      bottom: string
+      right: number
+      bottom: number
     }
   }
   initialPrompts: Array<{

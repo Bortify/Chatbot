@@ -51,7 +51,6 @@ export const authOptions: AuthOptions = {
             )
           }
         }
-        console.log('result is ',result)
         return result
       },
     }),

@@ -44,7 +44,6 @@ export function updateChatbot({
   payload: ChatbotType
   chatbotId: number
 }) {
-  console.log('payload in browser: ',payload)
   return browserApi(`/api/organisation/${orgId}/chatbot/${chatbotId}`, {
     method: 'PUT',
     body: payload,

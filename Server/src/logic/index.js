@@ -14,10 +14,6 @@ import { prisma } from '../models/index.js'
 
 export class Chatbot {
     #init = async ({ indexName, chatbot, conversationId }) => {
-        console.log({
-            conversationId,
-            chatbot
-        })
         this.conversation = await createOrGetConversation(
             conversationId,
             chatbot.id

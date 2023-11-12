@@ -1,84 +1,23 @@
-import { TypeOf, z } from 'zod'
-import React from 'react'
+import React, { forwardRef } from 'react'
 
 import { ChatbotConfiguration } from '@/lib/type/chatbot'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { SubmitHandler, UseFormReturn } from 'react-hook-form'
 import Form from '@/components/Form'
+import { BuilderFormType } from '@/lib/type/builder'
 
-const formSchema = z.object({
-  errorText: z.string(),
-  maxUserMsgAllowed: z.number(),
-  greetingMessage: z.string(),
-  limitExceedText: z.string(),
-  thinkingText: z.string(),
-  placeholder: z.string(),
-  style: z.object({
-    color: z.object({
-      icon: z.object({
-        background: z.string(),
-        text: z.string(),
-      }),
-      typingArea: z.object({
-        background: z.string(),
-        text: z.string(),
-      }),
-      sendButton: z.object({
-        background: z.string(),
-        text: z.string(),
-      }),
-      header: z.object({
-        background: z.string(),
-        text: z.string(),
-      }),
-      message: z.object({
-        user: z.object({
-          background: z.string(),
-          text: z.string(),
-        }),
-        machine: z.object({
-          background: z.string(),
-          text: z.string(),
-        }),
-      }),
-      thinkingContainer: z.object({
-        text: z.string(),
-      }),
-      body: z.string(),
-    }),
-    iconPosition: z.object({
-      right: z.string(),
-      bottom: z.string(),
-    }),
-  }),
-  initialPrompts: z.array(
-    z.object({
-      label: z.string(),
-      message: z.string(),
-    })
-  ),
-})
-
-type FormType = z.infer<typeof formSchema>
-
-export default function BuilderForm({
-  configurations,
-  updateFunction,
-}: {
-  configurations: ChatbotConfiguration
-  updateFunction: (param: ChatbotConfiguration) => void
-}) {
-  const { register, handleSubmit, formState } = useForm<FormType>({
-    resolver: zodResolver(formSchema),
-    defaultValues: configurations,
-  })
-  
-  const submitHandler = async (data: ChatbotConfiguration) => {
-    updateFunction(data)
+const BuilderForm = forwardRef<
+  HTMLFormElement,
+  {
+    configurations: ChatbotConfiguration
+    updateFunction: (param: ChatbotConfiguration) => void
+    form: UseFormReturn<BuilderFormType>
+    submitHandler: SubmitHandler<ChatbotConfiguration>
   }
-  
+>(({ configurations, updateFunction, form, submitHandler }, ref) => {
+  const { register, formState, handleSubmit } = form
+
   return (
-    <div className='w-full'>
+    <form className='w-full' ref={ref} onSubmit={handleSubmit(submitHandler)}>
       <Form.Field.Input
         className='w-full mt-3'
         label={'Error Text'}
@@ -87,7 +26,7 @@ export default function BuilderForm({
         })}
         type='text'
         error={formState.errors.errorText?.message}
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.errorText = value
@@ -103,7 +42,7 @@ export default function BuilderForm({
           })}
           type='text'
           error={formState.errors.limitExceedText?.message}
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.limitExceedText = value
@@ -128,7 +67,7 @@ export default function BuilderForm({
         })}
         type='text'
         error={formState.errors.greetingMessage?.message}
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.greetingMessage = value
@@ -143,7 +82,7 @@ export default function BuilderForm({
         })}
         type='text'
         error={formState.errors.thinkingText?.message}
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.thinkingText = value
@@ -158,7 +97,7 @@ export default function BuilderForm({
         })}
         type='text'
         error={formState.errors.placeholder?.message}
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.placeholder = value
@@ -174,7 +113,7 @@ export default function BuilderForm({
           })}
           type='color'
           error={formState.errors.style?.color?.header?.background?.message}
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.header.background = value
@@ -189,7 +128,7 @@ export default function BuilderForm({
           })}
           type='color'
           error={formState.errors.style?.color?.header?.text?.message}
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.header.text = value
@@ -205,7 +144,7 @@ export default function BuilderForm({
         })}
         type='color'
         error={formState.errors.style?.color?.body?.message}
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.style.color.body = value
@@ -220,7 +159,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.message.user.background = value
@@ -234,7 +173,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.message.user.text = value
@@ -250,7 +189,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.message.machine.background = value
@@ -264,7 +203,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.message.machine.text = value
@@ -279,7 +218,7 @@ export default function BuilderForm({
           required: 'This field is required',
         })}
         type='color'
-        onChange={(e)=>{
+        onChange={(e) => {
           const value = e.currentTarget.value
           const config = configurations
           config.style.color.thinkingContainer.text = value
@@ -294,7 +233,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.typingArea.background = value
@@ -308,7 +247,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.typingArea.text = value
@@ -324,7 +263,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.sendButton.background = value
@@ -338,7 +277,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.sendButton.text = value
@@ -354,7 +293,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.icon.background = value
@@ -368,7 +307,7 @@ export default function BuilderForm({
             required: 'This field is required',
           })}
           type='color'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
             config.style.color.icon.text = value
@@ -385,11 +324,12 @@ export default function BuilderForm({
           })}
           error={formState.errors.style?.iconPosition?.bottom?.message}
           type='number'
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
-            config.style.iconPosition.bottom = value
+            config.style.iconPosition.bottom = parseInt(value)
             updateFunction(config)
+            form.setValue('style.iconPosition.bottom',parseInt(value))
           }}
         />
         <Form.Field.Input
@@ -400,14 +340,19 @@ export default function BuilderForm({
           })}
           type='number'
           error={formState.errors.style?.iconPosition?.right?.message}
-          onChange={(e)=>{
+          onChange={(e) => {
             const value = e.currentTarget.value
             const config = configurations
-            config.style.iconPosition.right = value
+            config.style.iconPosition.right = parseInt(value)
             updateFunction(config)
+            form.setValue('style.iconPosition.right',parseInt(value))
           }}
         />
       </div>
-    </div>
+    </form>
   )
-}
+})
+
+BuilderForm.displayName = 'Builder'
+
+export default BuilderForm

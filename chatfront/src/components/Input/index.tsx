@@ -70,7 +70,7 @@ export default function Input({
         <input
           ref={inputRef}
           className='flex flex-1 px-2 py-4 bg-transparent border-none outline-none text-inherit disabled:opacity-75 disabled:cursor-not-allowed placeholder:text-slate-400'
-          placeholder={'Type Your Message'}
+          placeholder={configuration.placeholder}
           onKeyDown={onKeyDown}
           disabled={disabled}
         />
